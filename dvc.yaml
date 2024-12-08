@@ -1,0 +1,14 @@
+stages:
+  split:
+    cmd: python agroalimentary_quality_control/dataset/split.py
+      --seed ${data.split.random_seed}
+      --folds ${data.split.folds}
+      --data_set_path ${data.path}
+      --split_path ${data.split.path}
+      --train_set_file_name ${data.split.file_names.train_set}
+      --test_set_file_name ${data.split.file_names.test_set}
+      --val_set_file_name ${data.split.file_names.val_set}
+    deps:
+    - agroalimentary_quality_control/dataset/split.py
+    - ${data.path}
+    - ${data.split.path}

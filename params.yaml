@@ -1,0 +1,10 @@
+data:
+  split:
+    random_seed: 42
+    folds: 10
+    path: ../dataset/splits
+    file_names:
+      train_set: train.csv
+      test_set: test.csv
+      val_set: val.csv
+  path: ../dataset/data.csv

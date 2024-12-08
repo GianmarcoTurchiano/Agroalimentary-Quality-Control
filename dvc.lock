@@ -1,0 +1,22 @@
+schema: '2.0'
+stages:
+  split:
+    cmd: python agroalimentary_quality_control/dataset/split.py --seed 42 --folds
+      10 --data_set_path ../dataset/data.csv --split_path ../dataset/splits --train_set_file_name
+      train.csv --test_set_file_name test.csv --val_set_file_name val.csv
+    deps:
+    - path: ../dataset/data.csv
+      hash: md5
+      md5: 9b84fe25d2fa4a7ac2b760be8564f397
+      size: 56653
+      isexec: true
+    - path: ../dataset/splits
+      hash: md5
+      md5: fb72a58a83bd5f402873aa2d652116ab.dir
+      size: 615690
+      nfiles: 30
+    - path: agroalimentary_quality_control/dataset/split.py
+      hash: md5
+      md5: a3d8339de531efa24f5065a720bb1501
+      size: 1419
+      isexec: true
