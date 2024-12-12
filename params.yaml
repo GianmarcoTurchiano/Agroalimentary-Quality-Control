@@ -1,3 +1,5 @@
+models_path: ./models/folds
+
 data:
   split:
     random_seed: 42
@@ -8,3 +10,22 @@ data:
       test_set: test.csv
       val_set: val.csv
   path: ../dataset/data.csv
+  pics:
+    path: ../dataset/pictures
+    resize_ratio: 0.1
+  targets: "chlorophyll ammonia"
+
+training:
+  epochs: 1
+  batch_size: 8
+  patience: 20
+  learning_rate: 0.0001
+  weight_decay: 5e-6
+  random_seed: 42
+
+dagshub:
+  repo_owner: GianmarcoTurchiano
+  repo_name: Agroalimentary-Quality-Control
+
+mlflow:
+  experiment_name: '"Just a basic test"'

@@ -9,7 +9,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_set_path', type=str)
-    parser.add_argument('--split_path', type=str)
+    parser.add_argument('--splits_path', type=str)
     parser.add_argument('--folds', type=int)
     parser.add_argument('--seed', type=int)
     parser.add_argument('--train_set_file_name', type=str)
@@ -23,11 +23,11 @@ if __name__ == '__main__':
     val_ratio = 1 / args.folds
     kfold = KFold(n_splits=args.folds, shuffle=True, random_state=args.seed)
 
-    if os.path.exists(args.split_path):
-        shutil.rmtree(args.split_path)
+    if os.path.exists(args.splits_path):
+        shutil.rmtree(args.splits_path)
 
     for fold, (train_idx, test_idx) in enumerate(kfold.split(df), start=1):
-        fold_path = f'{args.split_path}/{fold}'
+        fold_path = f'{args.splits_path}/{fold}'
         
         os.makedirs(fold_path)
         
@@ -40,6 +40,6 @@ if __name__ == '__main__':
             random_state=args.seed
         )
 
-        train_set.to_csv(f'{fold_path}/{args.train_set_file_name}')
-        test_set.to_csv(f'{fold_path}/{args.test_set_file_name}')
-        val_set.to_csv(f'{fold_path}/{args.val_set_file_name}')
+        train_set.to_csv(f'{fold_path}/{args.train_set_file_name}', index=None)
+        test_set.to_csv(f'{fold_path}/{args.test_set_file_name}', index=None)
+        val_set.to_csv(f'{fold_path}/{args.val_set_file_name}', index=None)

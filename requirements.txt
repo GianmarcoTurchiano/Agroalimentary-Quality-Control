@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
--e git+https://git@github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control.git@746b59055071a4bc8d06d58a67c012a15088bd3c#egg=agroalimentary_quality_control
+-e git+https://git@github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control.git@9037afa459dcc943c5c66ea236de78f1e9708076#egg=agroalimentary_quality_control
     # via -r requirements.in
 aiobotocore[boto3]==2.15.2
     # via
@@ -35,6 +35,10 @@ aiosignal==1.3.1
     # via
     #   -r requirements.in
     #   aiohttp
+alembic==1.14.0
+    # via
+    #   -r requirements.in
+    #   mlflow
 amqp==5.3.1
     # via
     #   -r requirements.in
@@ -85,6 +89,10 @@ billiard==4.2.1
     # via
     #   -r requirements.in
     #   celery
+blinker==1.9.0
+    # via
+    #   -r requirements.in
+    #   flask
 boto3==1.35.36
     # via
     #   -r requirements.in
@@ -100,6 +108,11 @@ build==1.2.2.post1
     # via
     #   -r requirements.in
     #   pip-tools
+cachetools==5.5.0
+    # via
+    #   -r requirements.in
+    #   google-auth
+    #   mlflow-skinny
 celery==5.4.0
     # via
     #   -r requirements.in
@@ -128,6 +141,8 @@ click==8.1.7
     #   click-plugins
     #   click-repl
     #   dagshub
+    #   flask
+    #   mlflow-skinny
     #   pip-tools
     #   typer
 click-didyoumean==0.3.1
@@ -142,6 +157,10 @@ click-repl==0.3.0
     # via
     #   -r requirements.in
     #   celery
+cloudpickle==3.1.0
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
 colorama==0.4.6
     # via
     #   -r requirements.in
@@ -176,6 +195,10 @@ dagshub-annotation-converter==0.1.2
     # via
     #   -r requirements.in
     #   dagshub
+databricks-sdk==0.38.0
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
 dataclasses-json==0.6.7
     # via
     #   -r requirements.in
@@ -188,6 +211,11 @@ decorator==5.1.1
     # via
     #   -r requirements.in
     #   ipython
+deprecated==1.2.15
+    # via
+    #   -r requirements.in
+    #   opentelemetry-api
+    #   opentelemetry-semantic-conventions
 dictdiffer==0.9.0
     # via
     #   -r requirements.in
@@ -201,6 +229,10 @@ distro==1.9.0
     #   -r requirements.in
     #   dvc
     #   iterative-telemetry
+docker==7.1.0
+    # via
+    #   -r requirements.in
+    #   mlflow
 dpath==2.2.0
     # via
     #   -r requirements.in
@@ -256,6 +288,10 @@ filelock==3.16.1
     #   iterative-telemetry
     #   torch
     #   triton
+flask==3.1.0
+    # via
+    #   -r requirements.in
+    #   mlflow
 flatten-dict==0.4.2
     # via
     #   -r requirements.in
@@ -299,7 +335,12 @@ gitpython==3.1.43
     # via
     #   -r requirements.in
     #   dagshub
+    #   mlflow-skinny
     #   scmrepo
+google-auth==2.36.0
+    # via
+    #   -r requirements.in
+    #   databricks-sdk
 gql[requests]==3.5.0
     # via
     #   -r requirements.in
@@ -308,14 +349,32 @@ grandalf==0.8
     # via
     #   -r requirements.in
     #   dvc
+graphene==3.4.3
+    # via
+    #   -r requirements.in
+    #   mlflow
 graphql-core==3.2.5
     # via
     #   -r requirements.in
     #   gql
+    #   graphene
+    #   graphql-relay
+graphql-relay==3.2.0
+    # via
+    #   -r requirements.in
+    #   graphene
+greenlet==3.1.1
+    # via
+    #   -r requirements.in
+    #   sqlalchemy
 gto==1.7.2
     # via
     #   -r requirements.in
     #   dvc
+gunicorn==23.0.0
+    # via
+    #   -r requirements.in
+    #   mlflow
 h11==0.14.0
     # via
     #   -r requirements.in
@@ -339,6 +398,11 @@ idna==3.10
     #   httpx
     #   requests
     #   yarl
+importlib-metadata==8.5.0
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
+    #   opentelemetry-api
 ipykernel==6.29.5
     # via -r requirements.in
 ipython==8.30.0
@@ -349,6 +413,10 @@ iterative-telemetry==0.0.9
     # via
     #   -r requirements.in
     #   dvc
+itsdangerous==2.2.0
+    # via
+    #   -r requirements.in
+    #   flask
 jedi==0.19.2
     # via
     #   -r requirements.in
@@ -356,6 +424,8 @@ jedi==0.19.2
 jinja2==3.1.4
     # via
     #   -r requirements.in
+    #   flask
+    #   mlflow
     #   torch
 jmespath==1.0.1
     # via
@@ -389,6 +459,14 @@ lxml==5.3.0
     # via
     #   -r requirements.in
     #   dagshub-annotation-converter
+mako==1.3.8
+    # via
+    #   -r requirements.in
+    #   alembic
+markdown==3.7
+    # via
+    #   -r requirements.in
+    #   mlflow
 markdown-it-py==3.0.0
     # via
     #   -r requirements.in
@@ -397,12 +475,16 @@ markupsafe==3.0.2
     # via
     #   -r requirements.in
     #   jinja2
+    #   mako
+    #   werkzeug
 marshmallow==3.23.1
     # via
     #   -r requirements.in
     #   dataclasses-json
 matplotlib==3.9.3
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   mlflow
 matplotlib-inline==0.1.7
     # via
     #   -r requirements.in
@@ -412,6 +494,12 @@ mdurl==0.1.2
     # via
     #   -r requirements.in
     #   markdown-it-py
+mlflow==2.18.0
+    # via -r requirements.in
+mlflow-skinny==2.18.0
+    # via
+    #   -r requirements.in
+    #   mlflow
 mpmath==1.3.0
     # via
     #   -r requirements.in
@@ -439,6 +527,7 @@ numpy==2.1.3
     #   -r requirements.in
     #   contourpy
     #   matplotlib
+    #   mlflow
     #   pandas
     #   scikit-learn
     #   scipy
@@ -501,6 +590,20 @@ omegaconf==2.3.0
     #   -r requirements.in
     #   dvc
     #   hydra-core
+opentelemetry-api==1.28.2
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-sdk==1.28.2
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
+opentelemetry-semantic-conventions==0.49b2
+    # via
+    #   -r requirements.in
+    #   opentelemetry-sdk
 orjson==3.10.12
     # via
     #   -r requirements.in
@@ -511,15 +614,18 @@ packaging==24.2
     #   -r requirements.in
     #   build
     #   dvc
+    #   gunicorn
     #   hydra-core
     #   ipykernel
     #   marshmallow
     #   matplotlib
+    #   mlflow-skinny
 pandas==2.2.3
     # via
     #   -r requirements.in
     #   dagshub
     #   dagshub-annotation-converter
+    #   mlflow
 parso==0.8.4
     # via
     #   -r requirements.in
@@ -560,6 +666,10 @@ propcache==0.2.1
     #   -r requirements.in
     #   aiohttp
     #   yarl
+protobuf==5.29.1
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
 psutil==6.1.0
     # via
     #   -r requirements.in
@@ -574,6 +684,19 @@ pure-eval==0.2.3
     # via
     #   -r requirements.in
     #   stack-data
+pyarrow==18.1.0
+    # via
+    #   -r requirements.in
+    #   mlflow
+pyasn1==0.6.1
+    # via
+    #   -r requirements.in
+    #   pyasn1-modules
+    #   rsa
+pyasn1-modules==0.4.1
+    # via
+    #   -r requirements.in
+    #   google-auth
 pycparser==2.22
     # via
     #   -r requirements.in
@@ -625,6 +748,7 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   celery
     #   dagshub
+    #   graphene
     #   jupyter-client
     #   matplotlib
     #   pandas
@@ -637,6 +761,7 @@ pyyaml==6.0.2
     #   -r requirements.in
     #   dagshub
     #   dagshub-annotation-converter
+    #   mlflow-skinny
     #   omegaconf
 pyzmq==26.2.0
     # via
@@ -646,10 +771,13 @@ pyzmq==26.2.0
 requests==2.32.3
     # via
     #   -r requirements.in
+    #   databricks-sdk
+    #   docker
     #   dvc
     #   dvc-studio-client
     #   gql
     #   iterative-telemetry
+    #   mlflow-skinny
     #   requests-toolbelt
 requests-toolbelt==1.0.0
     # via
@@ -662,6 +790,10 @@ rich==13.9.4
     #   dvc
     #   gto
     #   typer
+rsa==4.9
+    # via
+    #   -r requirements.in
+    #   google-auth
 ruamel-yaml==0.18.6
     # via
     #   -r requirements.in
@@ -680,10 +812,13 @@ s3transfer==0.10.4
     #   -r requirements.in
     #   boto3
 scikit-learn==1.5.2
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   mlflow
 scipy==1.14.1
     # via
     #   -r requirements.in
+    #   mlflow
     #   scikit-learn
 scmrepo==3.3.9
     # via
@@ -721,6 +856,15 @@ sniffio==1.3.1
     # via
     #   -r requirements.in
     #   anyio
+sqlalchemy==2.0.36
+    # via
+    #   -r requirements.in
+    #   alembic
+    #   mlflow
+sqlparse==0.5.2
+    # via
+    #   -r requirements.in
+    #   mlflow-skinny
 sqltrie==0.11.1
     # via
     #   -r requirements.in
@@ -795,11 +939,15 @@ typer==0.15.1
 typing-extensions==4.12.2
     # via
     #   -r requirements.in
+    #   alembic
     #   anyio
     #   asyncssh
     #   dagshub-annotation-converter
+    #   graphene
+    #   opentelemetry-sdk
     #   pydantic
     #   pydantic-core
+    #   sqlalchemy
     #   torch
     #   typer
     #   typing-inspect
@@ -817,6 +965,7 @@ urllib3==2.2.3
     # via
     #   -r requirements.in
     #   botocore
+    #   docker
     #   dulwich
     #   requests
 vine==5.1.0
@@ -834,6 +983,10 @@ wcwidth==0.2.13
     # via
     #   -r requirements.in
     #   prompt-toolkit
+werkzeug==3.1.3
+    # via
+    #   -r requirements.in
+    #   flask
 wheel==0.45.1
     # via
     #   -r requirements.in
@@ -842,6 +995,7 @@ wrapt==1.17.0
     # via
     #   -r requirements.in
     #   aiobotocore
+    #   deprecated
 yarl==1.18.3
     # via
     #   -r requirements.in
@@ -851,6 +1005,10 @@ zc-lockfile==3.0.post1
     # via
     #   -r requirements.in
     #   dvc
+zipp==3.21.0
+    # via
+    #   -r requirements.in
+    #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

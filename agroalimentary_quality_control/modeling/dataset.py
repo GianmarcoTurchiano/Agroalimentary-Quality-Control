@@ -33,10 +33,13 @@ class RocketDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        image = np.array(image) / 255.0
+        image = np.array(image, dtype='float32') / 255.0
+        image = np.transpose(image, (2, 0, 1))
 
         target_values = [
             np.array(self.df.loc[item, col], dtype='float32') for col in self.target_cols
         ]
 
-        return image, *target_values
+        target_values = np.array(target_values)
+
+        return image, target_values
