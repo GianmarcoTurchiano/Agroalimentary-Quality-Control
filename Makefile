@@ -3,10 +3,10 @@
 #################################################################################
 
 PROJECT_NAME = agroalimentary_quality_control
-PYTHON_VERSION = 3.12.7
+PYTHON_VERSION = 3.10
 PYTHON_ENV_NAME = .venv
 REQUIREMENTS_FILE_NAME = requirements.in
-PYTHON_INTERPRETER = python
+PYTHON_INTERPRETER = python$(PYTHON_VERSION)
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -15,8 +15,8 @@ PYTHON_INTERPRETER = python
 ## Create and then activate a new python virtual environment
 .PHONY: create_environment
 create_environment:
-	python -m venv $(PYTHON_ENV_NAME)
-	@echo "Virtual environment created! Use '. $(PYTHON_ENV_NAME)/bin/python' to activate."
+	${PYTHON_INTERPRETER} -m venv $(PYTHON_ENV_NAME)
+	@echo "Virtual environment created! Use '. $(PYTHON_ENV_NAME)/bin/activate' to activate."
 
 ## Install Python Dependencies
 .PHONY: requirements
