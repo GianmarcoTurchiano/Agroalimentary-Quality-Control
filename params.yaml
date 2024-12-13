@@ -4,14 +4,14 @@ data:
   split:
     random_seed: 42
     folds: 10
-    path: ../dataset/splits
+    path: /kaggle/working/dataset/splits
     file_names:
       train_set: train.csv
       test_set: test.csv
       val_set: val.csv
-  path: ../dataset/data.csv
+  path: /kaggle/input/rocket-dataset/data.csv
   pics:
-    path: ../dataset/pictures
+    path: /kaggle/input/rocket-dataset/pics
     resize_ratio: 0.1
   targets: "chlorophyll ammonia"
 
