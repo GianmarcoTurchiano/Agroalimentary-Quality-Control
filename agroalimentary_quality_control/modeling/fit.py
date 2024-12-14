@@ -8,7 +8,7 @@ import numpy as np
 
 import os
 import argparse
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 from agroalimentary_quality_control.modeling.dataset import RocketDataset
 from agroalimentary_quality_control.modeling.regressor import RocketRegressor
@@ -110,7 +110,7 @@ def _fit(
 
     child_run = mlflow.start_run(run_name=f"Fold #{fold}", nested=True)
 
-    for epoch in tqdm(range(1, epochs + 1), desc="Epochs"):
+    for epoch in tqdm(range(1, epochs + 1), desc="Epochs", leave=False):
         avg_train_loss = training_step(
             model,
             train_loader,
