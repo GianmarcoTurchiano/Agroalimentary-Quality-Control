@@ -7,6 +7,8 @@ PYTHON_VERSION = 3.10
 PYTHON_ENV_NAME = .venv
 REQUIREMENTS_FILE_NAME = requirements.in
 PYTHON_INTERPRETER = python$(PYTHON_VERSION)
+VENV_BIN_PATH = $(PYTHON_ENV_NAME)/bin
+PYTHON_INTERPRETER_VENV = $(VENV_BIN_PATH)/python$(PYTHON_VERSION)
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -15,19 +17,22 @@ PYTHON_INTERPRETER = python$(PYTHON_VERSION)
 ## Create and then activate a new python virtual environment
 .PHONY: create_environment
 create_environment:
-	${PYTHON_INTERPRETER} -m venv $(PYTHON_ENV_NAME)
-	@echo "Virtual environment created! Use '. $(PYTHON_ENV_NAME)/bin/activate' to activate."
+	$(PYTHON_INTERPRETER) -m venv $(PYTHON_ENV_NAME)
+
+.PHONY: repro
+repro:
+	$(VENV_BIN_PATH)/dvc repro
 
 ## Install Python Dependencies
 .PHONY: requirements
 requirements:
-	$(PYTHON_INTERPRETER) -m pip install -U pip
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+	$(PYTHON_INTERPRETER_VENV) -m pip install -U pip
+	$(PYTHON_INTERPRETER_VENV) -m pip install -r requirements.txt
 	
 ## Exports dependencies and compiles them into a conflict-free requirements file.
 .PHONY: export_requirements
 export_requirements:
-	$(PYTHON_INTERPRETER) -m pip freeze > $(REQUIREMENTS_FILE_NAME)
+	$(PYTHON_INTERPRETER_VENV) -m pip freeze > $(REQUIREMENTS_FILE_NAME)
 	pip-compile $(REQUIREMENTS_FILE_NAME)
 	
 ## Delete all compiled Python files
@@ -44,7 +49,7 @@ pipeline_check:
 ## Launches behavioral tests on the current model.
 .PHONY: test_behavior
 test_behavior:
-	$(PYTHON_INTERPRETER) -m pytest $(PROJECT_NAME)/modeling/tests/functional_tests/
+	$(PYTHON_INTERPRETER_VENV) -m pytest $(PROJECT_NAME)/modeling/tests/functional_tests/
 
 ## Soft resets to the previous git commit
 .PHONY: rollback
@@ -73,4 +78,4 @@ endef
 export PRINT_HELP_PYSCRIPT
 
 help:
-	@$(PYTHON_INTERPRETER) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
+	@$(PYTHON_INTERPRETER_VENV) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)

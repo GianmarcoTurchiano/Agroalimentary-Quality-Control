@@ -4,6 +4,7 @@ from torch.nn import MSELoss
 from torch.utils.data import DataLoader
 import dagshub
 import mlflow
+import numpy as np
 
 import os
 import argparse
@@ -11,7 +12,6 @@ from tqdm import tqdm
 
 from agroalimentary_quality_control.modeling.dataset import RocketDataset
 from agroalimentary_quality_control.modeling.regressor import RocketRegressor
-from agroalimentary_quality_control.modeling.splits_iteration import splits_iteration
 
 
 def training_step(model, loader, device, optimizer, criterion):
@@ -198,11 +198,16 @@ if __name__ == '__main__':
         mlflow.log_param("Resize ratio", args.resize_ratio)
         mlflow.log_param("Random seed", args.seed)
 
-        avg_train_loss, avg_val_loss = splits_iteration(
-            args.splits_path,
-            args.models_path,
-            lambda fold, split_path, model_path: _fit(
-                fold,
+        splits = os.listdir(args.splits_path)
+
+        losses = []
+
+        for split in splits:
+            split_path = f'{args.splits_path}/{split}'
+            model_path = f'{args.models_path}/{split}.pth'
+
+            loss = _fit(
+                split,
                 split_path,
                 model_path,
                 args.train_set_file_name,
@@ -217,7 +222,10 @@ if __name__ == '__main__':
                 args.patience,
                 parent_run
             )
-        )
+
+            losses.append(loss)
+
+        avg_train_loss, avg_val_loss = np.array(losses).mean(axis=0)
 
         mlflow.log_metric("Avg. Training Loss", avg_train_loss)
         mlflow.log_metric("Avg. Validation Loss", avg_val_loss)
