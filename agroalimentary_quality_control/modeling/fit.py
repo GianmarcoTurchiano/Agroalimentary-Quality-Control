@@ -8,7 +8,7 @@ import numpy as np
 
 import os
 import argparse
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 from agroalimentary_quality_control.modeling.dataset import RocketDataset
 from agroalimentary_quality_control.modeling.regressor import RocketRegressor
