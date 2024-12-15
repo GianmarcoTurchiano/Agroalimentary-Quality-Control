@@ -12,15 +12,15 @@ data:
   path: /kaggle/input/rocket-dataset/data.csv
   pics:
     path: /kaggle/input/rocket-dataset/pics
-    resize_ratio: 0.1
+    resize_ratio: 0.5
   targets: "chlorophyll ammonia"
 
 training:
-  epochs: 1
-  batch_size: 8
-  patience: 20
+  epochs: 100
+  batch_size: 64
+  patience: 5
   learning_rate: 0.0001
-  weight_decay: 5e-6
+  weight_decay: 0
   random_seed: 42
 
 dagshub:
@@ -28,4 +28,4 @@ dagshub:
   repo_name: Agroalimentary-Quality-Control
 
 mlflow:
-  experiment_name: '"Just a basic test"'
+  experiment_name: '"Bidimensional output layer"'

@@ -9,6 +9,7 @@ import numpy as np
 import os
 import argparse
 from tqdm import tqdm
+import random
 
 from agroalimentary_quality_control.modeling.dataset import RocketDataset
 from agroalimentary_quality_control.modeling.regressor import RocketRegressor
@@ -183,6 +184,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    np.random.seed(args.seed)
+    random.seed(args.seed)
 
     dagshub.init(repo_owner=args.repo_owner, repo_name=args.repo_name, mlflow=True)
     mlflow.set_experiment(args.experiment_name)
