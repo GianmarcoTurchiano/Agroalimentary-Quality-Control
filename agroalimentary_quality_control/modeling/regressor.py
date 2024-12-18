@@ -9,12 +9,13 @@ class RocketRegressor(nn.Module):
         pretrained_model_output_size,
         pretrained_model_path,
         target_cols,
+        target_device,
         final_dropout_p=0.2
     ):
         super().__init__()
 
         self.model = models.mobilenet_v2(num_classes=pretrained_model_output_size)
-        d = torch.load(pretrained_model_path, weights_only=True)
+        d = torch.load(pretrained_model_path, weights_only=True, map_location=target_device)
         self.model.load_state_dict(d['model'])
 
         last_channel_width = self.model.last_channel

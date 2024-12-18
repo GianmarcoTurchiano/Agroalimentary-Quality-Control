@@ -99,7 +99,8 @@ def _fit(
     model = RocketRegressor(
         pretrained_model_output_size,
         pretrained_model_path,
-        target_cols
+        target_cols,
+        device
     )
     model = model.to(device)
 
