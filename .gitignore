@@ -1,5 +1,7 @@
 requirements.in
 
+./models/
+
 # Data
 /data/
 

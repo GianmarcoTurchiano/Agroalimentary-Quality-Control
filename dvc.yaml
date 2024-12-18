@@ -30,8 +30,11 @@ stages:
       --repo_name ${dagshub.repo_name}
       --experiment_name ${mlflow.experiment_name}
       --target_cols ${data.targets}
+      --pretrained_model_path ${pretrained.path}
+      --pretrained_model_output_size ${pretrained.output_size}
     deps:
     - agroalimentary_quality_control/modeling/fit.py
     - ${data.split.path}
+    - ${pretrained.path}
     outs:
     - ${models_path}

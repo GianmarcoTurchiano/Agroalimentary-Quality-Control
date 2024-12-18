@@ -61,6 +61,8 @@ def validation_step(model, loader, device, criterion):
 
 
 def _fit(
+    pretrained_model_output_size,
+    pretrained_model_path,
     fold,
     split_path,
     model_path,
@@ -94,7 +96,11 @@ def _fit(
     val_loader = DataLoader(val_set, batch_size)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = RocketRegressor(target_cols)
+    model = RocketRegressor(
+        pretrained_model_output_size,
+        pretrained_model_path,
+        target_cols
+    )
     model = model.to(device)
 
     criterion = MSELoss()
@@ -164,6 +170,8 @@ def _fit(
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('--pretrained_model_output_size', type=int)
+    parser.add_argument('--pretrained_model_path', type=str)
     parser.add_argument('--models_path', type=str)
     parser.add_argument('--splits_path', type=str)
     parser.add_argument('--train_set_file_name', type=str)
@@ -211,6 +219,8 @@ if __name__ == '__main__':
             model_path = f'{args.models_path}/{split}.pth'
 
             loss = _fit(
+                args.pretrained_model_output_size,
+                args.pretrained_model_path,
                 split,
                 split_path,
                 model_path,

@@ -1,3 +1,7 @@
+pretrained:
+  path: ./models/pretrained/mobilenet_v2_weights_best_acc.tar
+  output_size: 1081
+
 models_path: ./models/folds
 
 data:
@@ -12,15 +16,15 @@ data:
   path: /kaggle/input/rocket-dataset/data.csv
   pics:
     path: /kaggle/input/rocket-dataset/pics
-    resize_ratio: 0.5
+    resize_ratio: 0.3
   targets: "chlorophyll ammonia"
 
 training:
-  epochs: 100
-  batch_size: 32
-  patience: 5
-  learning_rate: 0.0001
-  weight_decay: 0
+  epochs: 50
+  batch_size: 64
+  patience: 10
+  learning_rate: 1e-4
+  weight_decay: 1e-3
   random_seed: 42
 
 dagshub:

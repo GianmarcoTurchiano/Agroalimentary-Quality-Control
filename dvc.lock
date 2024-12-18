@@ -1,9 +1,10 @@
 schema: '2.0'
 stages:
   split:
-    cmd: python agroalimentary_quality_control/dataset/split.py --seed 42 --folds
-      10 --data_set_path ../dataset/data.csv --split_path ../dataset/splits --train_set_file_name
-      train.csv --test_set_file_name test.csv --val_set_file_name val.csv
+    cmd: .venv/bin/python agroalimentary_quality_control/dataset/split.py --seed 42
+      --folds 2 --data_set_path ../dataset/data.csv --splits_path ../dataset/splits
+      --train_set_file_name train.csv --test_set_file_name test.csv --val_set_file_name
+      val.csv
     deps:
     - path: ../dataset/data.csv
       hash: md5
@@ -12,11 +13,42 @@ stages:
       isexec: true
     - path: ../dataset/splits
       hash: md5
-      md5: fb72a58a83bd5f402873aa2d652116ab.dir
-      size: 615690
-      nfiles: 30
+      md5: 707500eb3be8472d18ee60445dd6a088.dir
+      size: 113442
+      nfiles: 6
     - path: agroalimentary_quality_control/dataset/split.py
       hash: md5
-      md5: a3d8339de531efa24f5065a720bb1501
-      size: 1419
+      md5: 8f78912be8175ac932066d74ce553a2f
+      size: 1460
       isexec: true
+  fit:
+    cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py --models_path
+      ./models/folds --splits_path ../dataset/splits --train_set_file_name train.csv
+      --val_set_file_name val.csv --pics_path ../dataset/pics --resize_ratio 0.3 --epochs
+      1 --batch_size 8 --patience 10 --weight_decay 0.001 --learning_rate 0.0001 --seed
+      42 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
+      --experiment_name "Bidimensional output layer" --target_cols chlorophyll ammonia
+      --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
+      --pretrained_model_output_size 1081
+    deps:
+    - path: ../dataset/splits
+      hash: md5
+      md5: 707500eb3be8472d18ee60445dd6a088.dir
+      size: 113442
+      nfiles: 6
+    - path: ./models/pretrained/mobilenet_v2_weights_best_acc.tar
+      hash: md5
+      md5: 4f166b3508ecf624036f2db714a5f74f
+      size: 29159761
+      isexec: true
+    - path: agroalimentary_quality_control/modeling/fit.py
+      hash: md5
+      md5: 6f3a46a421bf4768fcb8b4fa370857a9
+      size: 7028
+      isexec: true
+    outs:
+    - path: ./models/folds
+      hash: md5
+      md5: 1120dd49df99ef42cbde8232b815364f.dir
+      size: 18270356
+      nfiles: 2
