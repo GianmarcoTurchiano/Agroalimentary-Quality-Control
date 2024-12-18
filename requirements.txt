@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
--e git+https://github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control@529675923073e47a5d5c8b35c065f79ef4aa8fd1#egg=agroalimentary_quality_control
+-e git+https://github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control@aceaff58ed1b63a91e20c6e0da3ec6b59d0b4716#egg=agroalimentary_quality_control
     # via -r requirements.in
 aiobotocore[boto3]==2.15.2
     # via
@@ -62,6 +62,10 @@ appdirs==1.4.4
     #   -r requirements.in
     #   dagshub
     #   iterative-telemetry
+asttokens==3.0.0
+    # via
+    #   -r requirements.in
+    #   stack-data
 async-timeout==5.0.1
     # via -r requirements.in
 asyncssh==2.19.0
@@ -158,6 +162,10 @@ colorama==0.4.6
     # via
     #   -r requirements.in
     #   dvc
+comm==0.2.2
+    # via
+    #   -r requirements.in
+    #   ipykernel
 configobj==5.0.9
     # via
     #   -r requirements.in
@@ -192,6 +200,14 @@ dataclasses-json==0.6.7
     # via
     #   -r requirements.in
     #   dagshub
+debugpy==1.8.11
+    # via
+    #   -r requirements.in
+    #   ipykernel
+decorator==5.1.1
+    # via
+    #   -r requirements.in
+    #   ipython
 deprecated==1.2.15
     # via
     #   -r requirements.in
@@ -261,6 +277,10 @@ entrypoints==0.4
     #   gto
 exceptiongroup==1.2.2
     # via -r requirements.in
+executing==2.1.0
+    # via
+    #   -r requirements.in
+    #   stack-data
 filelock==3.16.1
     # via
     #   -r requirements.in
@@ -382,6 +402,12 @@ importlib-metadata==8.5.0
     #   -r requirements.in
     #   mlflow-skinny
     #   opentelemetry-api
+ipykernel==6.29.5
+    # via -r requirements.in
+ipython==8.30.0
+    # via
+    #   -r requirements.in
+    #   ipykernel
 iterative-telemetry==0.0.9
     # via
     #   -r requirements.in
@@ -390,6 +416,10 @@ itsdangerous==2.2.0
     # via
     #   -r requirements.in
     #   flask
+jedi==0.19.2
+    # via
+    #   -r requirements.in
+    #   ipython
 jinja2==3.1.4
     # via
     #   -r requirements.in
@@ -405,6 +435,15 @@ joblib==1.4.2
     # via
     #   -r requirements.in
     #   scikit-learn
+jupyter-client==8.6.3
+    # via
+    #   -r requirements.in
+    #   ipykernel
+jupyter-core==5.7.2
+    # via
+    #   -r requirements.in
+    #   ipykernel
+    #   jupyter-client
 kiwisolver==1.4.7
     # via
     #   -r requirements.in
@@ -445,6 +484,11 @@ matplotlib==3.10.0
     # via
     #   -r requirements.in
     #   mlflow
+matplotlib-inline==0.1.7
+    # via
+    #   -r requirements.in
+    #   ipykernel
+    #   ipython
 mdurl==0.1.2
     # via
     #   -r requirements.in
@@ -468,6 +512,10 @@ mypy-extensions==1.0.0
     # via
     #   -r requirements.in
     #   typing-inspect
+nest-asyncio==1.6.0
+    # via
+    #   -r requirements.in
+    #   ipykernel
 networkx==3.4.2
     # via
     #   -r requirements.in
@@ -565,6 +613,7 @@ packaging==24.2
     #   dvc
     #   gunicorn
     #   hydra-core
+    #   ipykernel
     #   marshmallow
     #   matplotlib
     #   mlflow-skinny
@@ -574,6 +623,10 @@ pandas==2.2.3
     #   dagshub
     #   dagshub-annotation-converter
     #   mlflow
+parso==0.8.4
+    # via
+    #   -r requirements.in
+    #   jedi
 pathspec==0.12.1
     # via
     #   -r requirements.in
@@ -583,6 +636,10 @@ pathvalidate==3.2.1
     # via
     #   -r requirements.in
     #   dagshub
+pexpect==4.9.0
+    # via
+    #   -r requirements.in
+    #   ipython
 pillow==11.0.0
     # via
     #   -r requirements.in
@@ -593,10 +650,12 @@ platformdirs==4.3.6
     # via
     #   -r requirements.in
     #   dvc
+    #   jupyter-core
 prompt-toolkit==3.0.48
     # via
     #   -r requirements.in
     #   click-repl
+    #   ipython
 propcache==0.2.1
     # via
     #   -r requirements.in
@@ -611,6 +670,15 @@ psutil==6.1.0
     #   -r requirements.in
     #   dvc
     #   flufl-lock
+    #   ipykernel
+ptyprocess==0.7.0
+    # via
+    #   -r requirements.in
+    #   pexpect
+pure-eval==0.2.3
+    # via
+    #   -r requirements.in
+    #   stack-data
 pyarrow==18.1.0
     # via
     #   -r requirements.in
@@ -648,6 +716,7 @@ pygit2==1.16.0
 pygments==2.18.0
     # via
     #   -r requirements.in
+    #   ipython
     #   rich
 pygtrie==2.5.0
     # via
@@ -670,6 +739,7 @@ python-dateutil==2.9.0.post0
     #   celery
     #   dagshub
     #   graphene
+    #   jupyter-client
     #   matplotlib
     #   pandas
 pytz==2024.2
@@ -683,6 +753,11 @@ pyyaml==6.0.2
     #   dagshub-annotation-converter
     #   mlflow-skinny
     #   omegaconf
+pyzmq==26.2.0
+    # via
+    #   -r requirements.in
+    #   ipykernel
+    #   jupyter-client
 requests==2.32.3
     # via
     #   -r requirements.in
@@ -784,6 +859,10 @@ sqltrie==0.11.1
     # via
     #   -r requirements.in
     #   dvc-data
+stack-data==0.6.3
+    # via
+    #   -r requirements.in
+    #   ipython
 sympy==1.13.3
     # via
     #   -r requirements.in
@@ -814,6 +893,11 @@ torchaudio==2.4.0
     # via -r requirements.in
 torchvision==0.19.0
     # via -r requirements.in
+tornado==6.4.2
+    # via
+    #   -r requirements.in
+    #   ipykernel
+    #   jupyter-client
 tqdm==4.67.1
     # via
     #   -r requirements.in
@@ -821,6 +905,15 @@ tqdm==4.67.1
     #   dvc-data
     #   fsspec
     #   scmrepo
+traitlets==5.14.3
+    # via
+    #   -r requirements.in
+    #   comm
+    #   ipykernel
+    #   ipython
+    #   jupyter-client
+    #   jupyter-core
+    #   matplotlib-inline
 treelib==1.7.0
     # via
     #   -r requirements.in
