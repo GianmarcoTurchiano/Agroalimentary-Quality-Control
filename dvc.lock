@@ -2,53 +2,49 @@ schema: '2.0'
 stages:
   split:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/split.py --seed 42
-      --folds 2 --data_set_path ../dataset/data.csv --splits_path ../dataset/splits
-      --train_set_file_name train.csv --test_set_file_name test.csv --val_set_file_name
-      val.csv
+      --folds 10 --data_set_path /kaggle/input/rocket-dataset/data.csv --splits_path
+      /kaggle/working/dataset/splits --train_set_file_name train.csv --test_set_file_name
+      test.csv --val_set_file_name val.csv
     deps:
-    - path: ../dataset/data.csv
+    - path: /kaggle/input/rocket-dataset/data.csv
       hash: md5
       md5: 9b84fe25d2fa4a7ac2b760be8564f397
       size: 56653
-      isexec: true
-    - path: ../dataset/splits
+    - path: /kaggle/working/dataset/splits
       hash: md5
-      md5: 707500eb3be8472d18ee60445dd6a088.dir
-      size: 113442
-      nfiles: 6
+      md5: 55d241f3c58a0f88b79abedb4c625b04.dir
+      size: 567210
+      nfiles: 30
     - path: agroalimentary_quality_control/dataset/split.py
       hash: md5
       md5: 8f78912be8175ac932066d74ce553a2f
       size: 1460
-      isexec: true
   fit:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py --models_path
-      ./models/folds --splits_path ../dataset/splits --train_set_file_name train.csv
-      --val_set_file_name val.csv --pics_path ../dataset/pics --resize_ratio 0.3 --epochs
-      1 --batch_size 8 --patience 10 --weight_decay 0.001 --learning_rate 0.0001 --seed
-      42 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
-      --experiment_name "Bidimensional output layer" --target_cols chlorophyll ammonia
-      --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
+      ./models/folds --splits_path /kaggle/working/dataset/splits --train_set_file_name
+      train.csv --val_set_file_name val.csv --pics_path /kaggle/input/rocket-dataset/pics
+      --resize_ratio 0.3 --epochs 50 --batch_size 64 --patience 10 --weight_decay
+      0.001 --learning_rate 0.001 --seed 42 --repo_owner GianmarcoTurchiano --repo_name
+      Agroalimentary-Quality-Control --experiment_name "Bidimensional output layer"
+      --target_cols chlorophyll ammonia --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       --pretrained_model_output_size 1081
     deps:
-    - path: ../dataset/splits
-      hash: md5
-      md5: 707500eb3be8472d18ee60445dd6a088.dir
-      size: 113442
-      nfiles: 6
     - path: ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       hash: md5
       md5: 4f166b3508ecf624036f2db714a5f74f
       size: 29159761
-      isexec: true
+    - path: /kaggle/working/dataset/splits
+      hash: md5
+      md5: 55d241f3c58a0f88b79abedb4c625b04.dir
+      size: 567210
+      nfiles: 30
     - path: agroalimentary_quality_control/modeling/fit.py
       hash: md5
-      md5: 6f3a46a421bf4768fcb8b4fa370857a9
-      size: 7028
-      isexec: true
+      md5: 9636f85046c38c945a0fa24e3a440f78
+      size: 7044
     outs:
     - path: ./models/folds
       hash: md5
-      md5: 1120dd49df99ef42cbde8232b815364f.dir
-      size: 18270356
-      nfiles: 2
+      md5: a322d4b6d6249ccbc2939177fb146812.dir
+      size: 91352162
+      nfiles: 10
