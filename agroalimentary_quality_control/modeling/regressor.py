@@ -23,8 +23,10 @@ class RocketRegressor(nn.Module):
 
         self.model.classifier = nn.ModuleList([
             nn.Sequential(
+                nn.Linear(last_channel_width, int(last_channel_width / 2)),
+                nn.ReLU6(),
                 nn.Dropout(p=final_dropout_p),
-                nn.Linear(last_channel_width, 1)
+                nn.Linear(int(last_channel_width / 2), 1)
             ) 
             for _ in range(output_width)
         ])
