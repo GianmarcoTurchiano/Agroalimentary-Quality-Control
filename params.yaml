@@ -23,8 +23,8 @@ training:
   epochs: 50
   batch_size: 64
   patience: 10
-  learning_rate: 1e-3
-  weight_decay: 1e-3
+  learning_rate: 5e-4
+  weight_decay: 1e-4
   random_seed: 42
 
 dagshub:
@@ -32,4 +32,4 @@ dagshub:
   repo_name: Agroalimentary-Quality-Control
 
 mlflow:
-  experiment_name: '"Bidimensional output layer"'
+  experiment_name: '"Two-headed monodimensional output layer"'

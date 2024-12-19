@@ -21,13 +21,20 @@ class RocketRegressor(nn.Module):
         last_channel_width = self.model.last_channel
         output_width = len(target_cols)
 
-        self.model.classifier = nn.Sequential(
-            nn.Dropout(p=final_dropout_p),
-            nn.Linear(last_channel_width, output_width)
-        )
+        self.model.classifier = nn.ModuleList([
+            nn.Sequential(
+                nn.Dropout(p=final_dropout_p),
+                nn.Linear(last_channel_width, 1)
+            ) 
+            for _ in range(output_width)
+        ])
 
 
     def forward(self, x):
-        x = self.model(x)
+        x = self.model.features(x)
+        x = nn.functional.adaptive_avg_pool2d(x, (1, 1))
+        x = torch.flatten(x, 1)
+        x = [classifier(x) for classifier in self.model.classifier]
+        x = torch.cat(x, dim=1)
 
         return x
