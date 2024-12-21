@@ -37,10 +37,9 @@ stages:
   fit:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py
       --models_path ${models_path}
-      --splits_path ${data.split.path}
+      --aug_splits_path ${data.augs.split.path}
       --train_set_file_name ${data.split.file_names.train_set}
       --val_set_file_name ${data.split.file_names.val_set}
-      --pics_path ${data.pics.path}
       --resize_ratio ${data.pics.resize_ratio}
       --epochs ${training.epochs}
       --batch_size ${training.batch_size}

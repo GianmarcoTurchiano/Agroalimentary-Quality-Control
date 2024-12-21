@@ -40,4 +40,4 @@ dagshub:
   repo_name: Agroalimentary-Quality-Control
 
 mlflow:
-  experiment_name: '"Bidimensional output layer"'
+  experiment_name: '"Mono-head architecture with two outputs"'

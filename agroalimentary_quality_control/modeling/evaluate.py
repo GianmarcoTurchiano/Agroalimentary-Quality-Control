@@ -44,7 +44,6 @@ def evaluation(
 
         test_set = RocketDataset(
             filtered_df,
-            None,
             target_cols,
             resize=resize_ratio
         )
@@ -85,8 +84,8 @@ def evaluation(
 
         with mlflow.start_run(run_id=child_run_id, parent_run_id=parent_run_id):
             for j, target_name in enumerate(args.target_cols):
-                mlflow.log_metric(f"MSE_{target_name}_{evaluation_label}", mse[j])
-                mlflow.log_metric(f"R2_{target_name}_{evaluation_label}", r2[j])
+                mlflow.log_metric(f"MSE {target_name} {evaluation_label}", mse[j])
+                mlflow.log_metric(f"R2 {target_name} {evaluation_label}", r2[j])
 
                 print(target_name)
                 print(f"MSE: {mse[j]}")
@@ -99,8 +98,8 @@ def evaluation(
 
     with mlflow.start_run(run_id=parent_run_id):
         for i, target_name in enumerate(args.target_cols):
-            mlflow.log_metric(f"Avg_MSE_{target_name}_{evaluation_label}", avg_mse[j])
-            mlflow.log_metric(f"Avg_R2_{target_name}_{evaluation_label}", avg_r2[j])
+            mlflow.log_metric(f"Avg MSE {target_name} {evaluation_label}", avg_mse[i])
+            mlflow.log_metric(f"Avg R2 {target_name} {evaluation_label}", avg_r2[i])
 
             print(f"Avg. MSE {target_name} ({evaluation_label}): {avg_mse[i]}")
             print(f"Avg. R2 {target_name} ({evaluation_label}): {avg_r2[i]}")

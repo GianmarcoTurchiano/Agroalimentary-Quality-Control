@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 import dagshub
 import mlflow
 import numpy as np
+import pandas as pd
 
 import os
 import argparse
@@ -68,7 +69,6 @@ def _fit(
     model_path,
     train_set_file_name,
     val_set_file_name,
-    pics_path,
     target_cols,
     resize_ratio,
     batch_size,
@@ -78,16 +78,17 @@ def _fit(
     patience,
     parent_run
 ):
+    train_df = pd.read_csv(f'{split_path}/{train_set_file_name}')
+    val_df = pd.read_csv(f'{split_path}/{val_set_file_name}')
+
     train_set = RocketDataset(
-        f'{split_path}/{train_set_file_name}',
-        pics_path,
+        train_df,
         target_cols,
         resize=resize_ratio
     )
 
     val_set = RocketDataset(
-        f'{split_path}/{val_set_file_name}',
-        pics_path,
+        val_df,
         target_cols,
         resize=resize_ratio
     )
@@ -174,10 +175,9 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained_model_output_size', type=int)
     parser.add_argument('--pretrained_model_path', type=str)
     parser.add_argument('--models_path', type=str)
-    parser.add_argument('--splits_path', type=str)
+    parser.add_argument('--aug_splits_path', type=str)
     parser.add_argument('--train_set_file_name', type=str)
     parser.add_argument('--val_set_file_name', type=str)
-    parser.add_argument('--pics_path', type=str)
     parser.add_argument('--resize_ratio', type=float)
     parser.add_argument('--epochs', type=int)
     parser.add_argument('--batch_size', type=int)
@@ -211,12 +211,12 @@ if __name__ == '__main__':
         mlflow.log_param("Resize ratio", args.resize_ratio)
         mlflow.log_param("Random seed", args.seed)
 
-        splits = os.listdir(args.splits_path)
+        splits = os.listdir(args.aug_splits_path)
 
         losses = []
 
         for split in splits:
-            split_path = f'{args.splits_path}/{split}'
+            split_path = f'{args.aug_splits_path}/{split}'
             model_path = f'{args.models_path}/{split}.pth'
 
             loss = _fit(
@@ -227,7 +227,6 @@ if __name__ == '__main__':
                 model_path,
                 args.train_set_file_name,
                 args.val_set_file_name,
-                args.pics_path,
                 args.target_cols,
                 args.resize_ratio,
                 args.batch_size,

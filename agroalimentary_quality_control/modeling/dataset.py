@@ -6,10 +6,9 @@ from torch.utils.data import Dataset
 
 
 class RocketDataset(Dataset):
-    def __init__(self, df, pic_dir_path, target_cols, resize=1, transform=None):
+    def __init__(self, df, target_cols, resize=1, transform=None):
         self.df = df.reset_index(drop=True)
         self.resize = resize
-        self.pic_dir_path = pic_dir_path
         self.transform = transform
         self.target_cols = target_cols
  
