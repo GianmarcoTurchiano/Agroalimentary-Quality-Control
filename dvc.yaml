@@ -74,6 +74,8 @@ stages:
       --target_cols ${data.targets}
       --pretrained_model_path ${pretrained.path}
       --pretrained_model_output_size ${pretrained.output_size}
+      --filename_col ${data.cols.filename}
+      --pics_path ${data.pics.path}
     deps:
     - agroalimentary_quality_control/modeling/evaluate.py
     - ${data.augs.split.path}
