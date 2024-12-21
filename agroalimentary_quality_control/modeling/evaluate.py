@@ -83,31 +83,29 @@ def evaluation(
         print(f'Split {split}')
         print(evaluation_label)
 
-        for j, target_name in enumerate(args.target_cols):
-            print(target_name)
-            print(f"MSE: {mse[j]}")
-            print(f"R2: {r2[j]}")
-        
-        print()
-
-        continue
-
         with mlflow.start_run(run_id=child_run_id, parent_run_id=parent_run_id):
             for j, target_name in enumerate(args.target_cols):
-                mlflow.log_metric(f"MSE {target_name} ({evaluation_label})", mse[j])
-                mlflow.log_metric(f"R2 {target_name} ({evaluation_label})", r2[j])
+                mlflow.log_metric(f"MSE_{target_name}_{evaluation_label}", mse[j])
+                mlflow.log_metric(f"R2_{target_name}_{evaluation_label}", r2[j])
+
+                print(target_name)
+                print(f"MSE: {mse[j]}")
+                print(f"R2: {r2[j]}")
+        
+        print()
 
     avg_r2 = np.array(r2_splits).mean(axis=0)
     avg_mse = np.array(mse_splits).mean(axis=0)
 
-    for i, target_name in enumerate(args.target_cols):
-        print(f"Avg. MSE {target_name} ({evaluation_label}): {avg_mse[i]}")
-        print(f"Avg. R2 {target_name} ({evaluation_label}): {avg_r2[i]}")
-        print()
+    with mlflow.start_run(run_id=parent_run_id):
+        for i, target_name in enumerate(args.target_cols):
+            mlflow.log_metric(f"Avg_MSE_{target_name}_{evaluation_label}", avg_mse[j])
+            mlflow.log_metric(f"Avg_R2_{target_name}_{evaluation_label}", avg_r2[j])
 
-    #with mlflow.start_run(run_id=parent_run_id):
-        #mlflow.log_metric("Avg. Training Loss", avg_train_loss)
-        #mlflow.log_metric("Avg. Validation Loss", avg_val_loss)
+            print(f"Avg. MSE {target_name} ({evaluation_label}): {avg_mse[i]}")
+            print(f"Avg. R2 {target_name} ({evaluation_label}): {avg_r2[i]}")
+    
+    print()
 
 
 if __name__ == '__main__':
@@ -130,8 +128,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #dagshub.init(repo_owner=args.repo_owner, repo_name=args.repo_name, mlflow=True)
-    #mlflow.set_experiment(args.experiment_name)
+    dagshub.init(repo_owner=args.repo_owner, repo_name=args.repo_name, mlflow=True)
+    mlflow.set_experiment(args.experiment_name)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
