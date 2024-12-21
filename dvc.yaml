@@ -1,4 +1,14 @@
 stages:
+  transform:
+    cmd: .venv/bin/python agroalimentary_quality_control/dataset/transform.py
+      --seed ${data.split.random_seed}
+      --data_set_path ${data.path}
+      --pics_path ${data.pics.path}
+      --augs_per_pic ${data.augs.amt}
+      --aug_pics_path ${data.augs.pics.path}
+    deps:
+    - agroalimentary_quality_control/dataset/transform.py
+    - ${data.path}
   split:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/split.py
       --seed ${data.split.random_seed}
@@ -12,6 +22,18 @@ stages:
     - agroalimentary_quality_control/dataset/split.py
     - ${data.path}
     - ${data.split.path}
+  augment:
+    cmd: .venv/bin/python agroalimentary_quality_control/dataset/augment.py
+      --splits_path ${data.split.path}
+      --pics_path ${data.pics.path}
+      --aug_splits_path ${data.augs.split.path}
+      --filename_col ${data.cols.filename}
+      --aug_pics_path ${data.augs.pics.path}
+      --augs_per_pic ${data.augs.amt}
+    deps:
+    - agroalimentary_quality_control/dataset/augment.py
+    - ${data.split.path}
+    - ${data.augs.split.path}
   fit:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py
       --models_path ${models_path}

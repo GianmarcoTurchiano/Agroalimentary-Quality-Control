@@ -17,8 +17,7 @@ class RocketDataset(Dataset):
         return len(self.df)
  
     def __getitem__(self, item):
-        img_file_name = self.df.iloc[item, 0]
-        img_file_path = f'{self.pic_dir_path}/{img_file_name}'
+        img_file_path = self.df.iloc[item, 0]
 
         image = Image.open(img_file_path).convert("RGB")
 
@@ -26,9 +25,6 @@ class RocketDataset(Dataset):
         new_width = int(width * self.resize)
         new_height = int(height * self.resize)
         image = image.resize((new_width, new_height), Image.BICUBIC)
-
-        #crop_transform = RandomResizedCrop((new_height, new_width))
-        #image = crop_transform(image)
 
         if self.transform:
             image = self.transform(image)

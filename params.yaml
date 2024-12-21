@@ -5,6 +5,8 @@ pretrained:
 models_path: ./models/folds
 
 data:
+  cols:
+    filename: fname
   split:
     random_seed: 42
     folds: 10
@@ -18,6 +20,12 @@ data:
     path: /kaggle/input/rocket-dataset/pics
     resize_ratio: 0.3
   targets: "chlorophyll ammonia"
+  augs:
+    split:
+      path: /kaggle/working/dataset/aug_splits
+    amt: 5
+    pics:
+      path: /kaggle/working/dataset/aug_pics
 
 training:
   epochs: 50
