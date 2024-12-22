@@ -20,7 +20,7 @@ def evaluation(
     test_set_file_name,
     models_path,
     filename_col,
-    target_cols,
+    target_col,
     resize_ratio,
     batch_size,
     model,
@@ -44,7 +44,8 @@ def evaluation(
 
         test_set = RocketDataset(
             filtered_df,
-            target_cols,
+            target_col,
+            filename_col,
             resize=resize_ratio
         )
 
@@ -69,12 +70,12 @@ def evaluation(
                 leave=False
             ):
                 images, targets = images.to(device), targets.to(device)
-                predicted = model(images)
+                predicted, _ = model(images)
                 all_preds.extend(predicted.cpu().numpy())
                 all_targets.extend(targets.cpu().numpy())
 
-        r2 = r2_score(all_targets, all_preds, multioutput='raw_values')
-        mse = mean_squared_error(all_targets, all_preds, multioutput='raw_values')
+        r2 = r2_score(all_targets, all_preds)
+        mse = mean_squared_error(all_targets, all_preds)
         
         r2_splits.append(r2)
         mse_splits.append(mse)
@@ -83,13 +84,11 @@ def evaluation(
         print(evaluation_label)
 
         with mlflow.start_run(run_id=child_run_id, parent_run_id=parent_run_id):
-            for j, target_name in enumerate(args.target_cols):
-                mlflow.log_metric(f"MSE {target_name} {evaluation_label}", mse[j])
-                mlflow.log_metric(f"R2 {target_name} {evaluation_label}", r2[j])
+            mlflow.log_metric(f"MSE {evaluation_label}", mse)
+            mlflow.log_metric(f"R2 {evaluation_label}", r2)
 
-                print(target_name)
-                print(f"MSE: {mse[j]}")
-                print(f"R2: {r2[j]}")
+            print(f"MSE: {mse}")
+            print(f"R2: {r2}")
         
         print()
 
@@ -97,12 +96,11 @@ def evaluation(
     avg_mse = np.array(mse_splits).mean(axis=0)
 
     with mlflow.start_run(run_id=parent_run_id):
-        for i, target_name in enumerate(args.target_cols):
-            mlflow.log_metric(f"Avg MSE {target_name} {evaluation_label}", avg_mse[i])
-            mlflow.log_metric(f"Avg R2 {target_name} {evaluation_label}", avg_r2[i])
+        mlflow.log_metric(f"Avg MSE {evaluation_label}", avg_mse[i])
+        mlflow.log_metric(f"Avg R2 {evaluation_label}", avg_r2[i])
 
-            print(f"Avg. MSE {target_name} ({evaluation_label}): {avg_mse[i]}")
-            print(f"Avg. R2 {target_name} ({evaluation_label}): {avg_r2[i]}")
+        print(f"Avg. MSE ({evaluation_label}): {avg_mse[i]}")
+        print(f"Avg. R2 ({evaluation_label}): {avg_r2[i]}")
     
     print()
 
@@ -118,7 +116,7 @@ if __name__ == '__main__':
     parser.add_argument('--aug_pics_path', type=str)
     parser.add_argument('--resize_ratio', type=float)
     parser.add_argument('--batch_size', type=int)
-    parser.add_argument('--target_cols', nargs='+', type=str)
+    parser.add_argument('--target_col', type=str)
     parser.add_argument('--repo_owner', type=str)
     parser.add_argument('--repo_name', type=str)
     parser.add_argument('--experiment_name', type=str)
@@ -135,7 +133,6 @@ if __name__ == '__main__':
     model = RocketRegressor(
         args.pretrained_model_output_size,
         args.pretrained_model_path,
-        args.target_cols,
         device
     )
 
@@ -144,7 +141,7 @@ if __name__ == '__main__':
         args.test_set_file_name,
         args.models_path,
         args.filename_col,
-        args.target_cols,
+        args.target_col,
         args.resize_ratio,
         args.batch_size,
         model,
@@ -158,7 +155,7 @@ if __name__ == '__main__':
         args.test_set_file_name,
         args.models_path,
         args.filename_col,
-        args.target_cols,
+        args.target_col,
         args.resize_ratio,
         args.batch_size,
         model,
@@ -172,7 +169,7 @@ if __name__ == '__main__':
         args.test_set_file_name,
         args.models_path,
         args.filename_col,
-        args.target_cols,
+        args.target_col,
         args.resize_ratio,
         args.batch_size,
         model,

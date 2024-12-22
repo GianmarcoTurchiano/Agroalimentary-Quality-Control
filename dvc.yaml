@@ -82,7 +82,7 @@ stages:
       --repo_owner ${dagshub.repo_owner}
       --repo_name ${dagshub.repo_name}
       --experiment_name ${mlflow.experiment_name}
-      --target_cols ${data.targets}
+      --target_col ${data.targets}
       --pretrained_model_path ${pretrained.path}
       --pretrained_model_output_size ${pretrained.output_size}
       --filename_col ${data.cols.filename}
