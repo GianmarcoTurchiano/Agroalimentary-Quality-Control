@@ -5,6 +5,7 @@ pretrained:
 models_path: ./models/folds
 
 data:
+  n_bins: 4
   cols:
     filename: fname
   split:
@@ -15,11 +16,12 @@ data:
       train_set: train.csv
       test_set: test.csv
       val_set: val.csv
-  path: /kaggle/input/rocket-dataset/data.csv
+  original_path: /kaggle/input/rocket-dataset/data.csv
+  path: /kaggle/working/dataset/data.csv
   pics:
     path: /kaggle/input/rocket-dataset/pics
     resize_ratio: 0.3
-  targets: "chlorophyll ammonia"
+  targets: "chlorophyll"
   augs:
     split:
       path: /kaggle/working/dataset/aug_splits

@@ -1,4 +1,13 @@
 stages:
+  binning:
+    cmd: .venv/bin/python agroalimentary_quality_control/dataset/binning.py
+      --original_data_set_path ${data.original_path}
+      --data_set_path ${data.path}
+      --n_bins ${data.n_bins}
+      --target_col  ${data.targets}
+    deps:
+    - agroalimentary_quality_control/dataset/binning.py
+    - ${data.original_path}
   transform:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/transform.py
       --seed ${data.split.random_seed}
