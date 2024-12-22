@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
--e git+https://github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control@5e84eea2153971b852a3f04932fe12871abac44a#egg=agroalimentary_quality_control
+-e git+https://github.com/GianmarcoTurchiano/Agroalimentary-Quality-Control@501b79fcde5c2f0a795bd5035d82324a0dd21004#egg=agroalimentary_quality_control
     # via -r requirements.in
 aiobotocore[boto3]==2.15.2
     # via

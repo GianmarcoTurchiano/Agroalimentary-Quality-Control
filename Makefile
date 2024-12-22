@@ -9,6 +9,7 @@ REQUIREMENTS_FILE_NAME = requirements.in
 PYTHON_INTERPRETER = python$(PYTHON_VERSION)
 VENV_BIN_PATH = $(PYTHON_ENV_NAME)/bin
 PYTHON_INTERPRETER_VENV = $(VENV_BIN_PATH)/python$(PYTHON_VERSION)
+DVC_PATH = $(VENV_BIN_PATH)/dvc
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -19,9 +20,17 @@ PYTHON_INTERPRETER_VENV = $(VENV_BIN_PATH)/python$(PYTHON_VERSION)
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv $(PYTHON_ENV_NAME)
 
-.PHONY: repro
-repro:
-	$(VENV_BIN_PATH)/dvc repro
+.PHONY: experiment_repro
+experiment_repro:
+	$(DVC_PATH) repro
+
+.PHONY: experiment_push
+experiment_push:
+	$(DVC_PATH) push -r origin
+
+.PHONY: experiment_pull
+experiment_pull:
+	$(DVC_PATH) pull -r origin
 
 ## Install Python Dependencies
 .PHONY: requirements
@@ -42,9 +51,9 @@ clean:
 	find . -type d -name "__pycache__" -delete
 
 ## Checks the integrity of the DVC pipeline
-.PHONY: pipeline_check
+.PHONY: experiment_check
 pipeline_check:
-	dvc repro --dry
+	$(DVC_PATH) repro --dry
 
 ## Launches behavioral tests on the current model.
 .PHONY: test_behavior

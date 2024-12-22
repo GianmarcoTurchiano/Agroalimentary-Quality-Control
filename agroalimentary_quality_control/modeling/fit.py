@@ -119,7 +119,8 @@ def _fit(
 
     child_run = mlflow.start_run(run_name=f"Fold #{fold}", nested=True)
 
-    for epoch in tqdm(range(1, epochs + 1), desc="Epochs", leave=False):
+    for epoch in range(1, epochs + 1):
+        tqdm.write(f'Epoch {epoch} out of {epochs}')
         avg_train_loss = training_step(
             model,
             train_loader,
