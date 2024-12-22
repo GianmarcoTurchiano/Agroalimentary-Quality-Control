@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 from agroalimentary_quality_control.bin_col_name import get_bin_col_name
+import torch
 
 
 class RocketDataset(Dataset):
@@ -22,7 +23,9 @@ class RocketDataset(Dataset):
 
         image = self._load_img(img_file_path)
 
-        return image, row[self.target_col]
+        target = torch.tensor(row[self.target_col], dtype=torch.float).unsqueeze(-1)
+
+        return image, target
 
     def _load_img(self, img_file_path):
         image = Image.open(img_file_path).convert("RGB")

@@ -8,7 +8,6 @@ class RocketRegressor(nn.Module):
         self,
         pretrained_model_output_size,
         pretrained_model_path,
-        target_cols,
         target_device,
         final_dropout_p=0.2
     ):
@@ -19,15 +18,25 @@ class RocketRegressor(nn.Module):
         self.model.load_state_dict(d['model'])
 
         last_channel_width = self.model.last_channel
-        output_width = len(target_cols)
 
-        self.model.classifier = nn.Sequential(
+        self.regressor = nn.Sequential(
             nn.Dropout(p=final_dropout_p),
-            nn.Linear(last_channel_width, output_width)
+            nn.Linear(last_channel_width, 1)
+        )
+
+        self.embedder = nn.Sequential(
+            nn.Dropout(p=final_dropout_p),
+            nn.Linear(last_channel_width, 128)
         )
 
 
     def forward(self, x):
-        x = self.model(x)
+        x = self.model.features(x)
+        
+        x = nn.functional.adaptive_avg_pool2d(x, (1, 1))
+        x = torch.flatten(x, 1)
 
-        return x
+        prediction = self.regressor(x)
+        embedding = self.embedder(x)
+
+        return prediction, embedding

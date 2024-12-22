@@ -27,7 +27,7 @@ stages:
       --train_set_file_name ${data.split.file_names.train_set}
       --test_set_file_name ${data.split.file_names.test_set}
       --val_set_file_name ${data.split.file_names.val_set}
-        --target_col ${data.targets}
+      --target_col ${data.targets}
     deps:
     - agroalimentary_quality_control/dataset/split.py
     - ${data.path}
@@ -60,9 +60,11 @@ stages:
       --repo_owner ${dagshub.repo_owner}
       --repo_name ${dagshub.repo_name}
       --experiment_name ${mlflow.experiment_name}
-      --target_cols ${data.targets}
+      --target_col ${data.targets}
       --pretrained_model_path ${pretrained.path}
       --pretrained_model_output_size ${pretrained.output_size}
+      --filename_col ${data.cols.filename}
+      --n_bins ${data.n_bins}
     deps:
     - agroalimentary_quality_control/modeling/fit.py
     - ${data.split.path}
