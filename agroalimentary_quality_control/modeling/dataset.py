@@ -46,6 +46,11 @@ class ContrastiveRocketDataset(RocketDataset):
         self.n_bins = n_bins
         self.target_bin_col = get_bin_col_name(target_col)
 
+        self.neg_bins = [None] * n_bins
+
+        for bin in range(n_bins):
+            self.neg_bins[bin] = self._get_negative_bins(bin)
+
     def __getitem__(self, item):
         image, target_value = super().__getitem__(item)
         row = self.df.iloc[item]
@@ -56,7 +61,7 @@ class ContrastiveRocketDataset(RocketDataset):
 
         anchor_image = self._load_img(anchor_img_path)
 
-        negative_bins = self._get_negative_bins(bin)
+        negative_bins = self.neg_bins[bin]
         negative_row = self.df[self.df[self.target_bin_col].isin(negative_bins)].sample(1)
         negative_img_path = negative_row[self.fname_col].iloc[0]
 
