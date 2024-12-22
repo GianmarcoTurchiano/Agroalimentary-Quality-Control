@@ -3,21 +3,28 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
+from agroalimentary_quality_control.bin_col_name import bin_col_name
 
 
 class RocketDataset(Dataset):
-    def __init__(self, df, target_cols, resize=1, transform=None):
+    def __init__(self, df, target_col, fname_col, resize=1):
         self.df = df.reset_index(drop=True)
         self.resize = resize
-        self.transform = transform
-        self.target_cols = target_cols
- 
+        self.target_col = target_col
+        self.fname_col = fname_col
+
     def __len__(self):
         return len(self.df)
  
     def __getitem__(self, item):
-        img_file_path = self.df.iloc[item, 0]
+        row = self.df.iloc[item]
+        img_file_path = row[self.fname_col]
 
+        image = self._load_img(img_file_path)
+
+        return image, row[self.target_col]
+
+    def _load_img(self, img_file_path):
         image = Image.open(img_file_path).convert("RGB")
 
         width, height = image.size
@@ -25,16 +32,40 @@ class RocketDataset(Dataset):
         new_height = int(height * self.resize)
         image = image.resize((new_width, new_height), Image.BICUBIC)
 
-        if self.transform:
-            image = self.transform(image)
-
         image = np.array(image, dtype='float32') / 255.0
         image = np.transpose(image, (2, 0, 1))
 
-        target_values = [
-            np.array(self.df.loc[item, col], dtype='float32') for col in self.target_cols
-        ]
+        return image
 
-        target_values = np.array(target_values)
+class ContrastiveRocketDataset(RocketDataset):
+    def __init__(self, df, target_col, fname_col, n_bins, resize=1):
+        super().__init__(df, target_col, fname_col, resize)
+        self.n_bins = n_bins
+        self.target_bin_col = bin_col_name(target_col)
 
-        return image, target_values
+    def __getitem__(self, item):
+        image, target_value = super().__getitem__(item)
+        row = self.df.iloc[item]
+        bin = row[self.target_bin_col]
+
+        anchor_row = self.df[self.df[self.target_bin_col].isin([bin])].drop(item).sample(1)
+        anchor_img_path = anchor_row[self.fname_col].iloc[0]
+
+        anchor_image = self._load_img(anchor_img_path)
+
+        negative_bins = self._get_negative_bins(bin)
+        negative_row = self.df[self.df[self.target_bin_col].isin(negative_bins)].sample(1)
+        negative_img_path = negative_row[self.fname_col].iloc[0]
+
+        negative_image = self._load_img(negative_img_path)
+
+        return image, anchor_image, negative_image, target_value
+    
+    def _get_negative_bins(self, target_bin):
+        negative_range = []
+        
+        for i in range(self.n_bins):
+            if i != target_bin and abs(i - target_bin) > 1:
+                negative_range.append(i)
+        
+        return negative_range

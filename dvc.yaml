@@ -4,7 +4,7 @@ stages:
       --original_data_set_path ${data.original_path}
       --data_set_path ${data.path}
       --n_bins ${data.n_bins}
-      --target_col  ${data.targets}
+      --target_col ${data.targets}
     deps:
     - agroalimentary_quality_control/dataset/binning.py
     - ${data.original_path}

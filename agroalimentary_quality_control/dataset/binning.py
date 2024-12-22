@@ -22,4 +22,4 @@ if __name__ == '__main__':
     bin_col = bin_col_name(args.target_col)
     df[bin_col] = pd.Series(bins.cat.codes, dtype='int')
 
-    df.to_csv(args.data_set_path)
+    df.to_csv(args.data_set_path, index=False)
