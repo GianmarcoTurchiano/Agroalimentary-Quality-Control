@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from torch.nn import Module, TripletMarginLoss
+from torch.nn import Module, TripletMarginLoss, MSELoss
 from torch.utils.data import DataLoader
 import dagshub
 import mlflow
@@ -134,6 +134,7 @@ def _fit(
 
     contrastive_loss_fn = TripletMarginLoss()
     regression_loss_fn = RSELoss()
+    val_loss_fn = MSELoss()
 
     optimizer = optim.Adam(
         model.parameters(),
@@ -171,11 +172,11 @@ def _fit(
             model,
             val_loader,
             device,
-            regression_loss_fn
+            val_loss_fn
         )
 
-        mlflow.log_metric(f"Validation RSE Loss", avg_val_loss, step=epoch)
-        tqdm.write(f"Epoch {epoch}, Validation RSE Loss: {avg_val_loss}")
+        mlflow.log_metric(f"Validation MSE Loss", avg_val_loss, step=epoch)
+        tqdm.write(f"Epoch {epoch}, Validation MSE Loss: {avg_val_loss}")
 
         # Early stopping
         if avg_val_loss < best_val_loss:
@@ -191,7 +192,7 @@ def _fit(
                 'parent_run_id': parent_run.info.run_id
             }, model_path)
             
-            mlflow.log_metric(f"Output Validation RSE Loss", avg_val_loss, step=epoch)
+            mlflow.log_metric(f"Output Validation MSE Loss", avg_val_loss, step=epoch)
             mlflow.log_metric(f"Output Train RSE Loss", avg_train_loss, step=epoch)
             
             tqdm.write("Best model weights have been saved.")
@@ -286,9 +287,9 @@ if __name__ == '__main__':
         mlflow.log_metric("Avg. Train Total Loss", avg_train_loss)
         mlflow.log_metric("Avg. Train RSE Loss", avg_regr_loss)
         mlflow.log_metric("Avg. Train Triplet Loss", avg_cont_loss)
-        mlflow.log_metric("Avg. Validation RSE Loss", avg_val_loss)
+        mlflow.log_metric("Avg. Validation MSE Loss", avg_val_loss)
 
         tqdm.write(f"Avg. Train Total Loss {avg_train_loss}")
         tqdm.write(f"Avg. Train RSE Loss {avg_regr_loss}")
         tqdm.write(f"Avg. Train Triplet Loss {avg_cont_loss}")
-        tqdm.write(f"Avg. Validation RSE Loss {avg_val_loss}")
+        tqdm.write(f"Avg. Validation MSE Loss {avg_val_loss}")
