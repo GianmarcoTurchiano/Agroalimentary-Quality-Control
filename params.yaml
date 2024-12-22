@@ -19,7 +19,7 @@ data:
   pics:
     path: /kaggle/input/rocket-dataset/pics
     resize_ratio: 0.3
-  targets: "chlorophyll ammonia"
+  targets: "chlorophyll"
   augs:
     split:
       path: /kaggle/working/dataset/aug_splits
@@ -31,8 +31,8 @@ training:
   epochs: 50
   batch_size: 64
   patience: 10
-  learning_rate: 1e-3
-  weight_decay: 1e-3
+  learning_rate: 1e-4
+  weight_decay: 1e-2
   random_seed: 42
 
 dagshub:
@@ -40,4 +40,4 @@ dagshub:
   repo_name: Agroalimentary-Quality-Control
 
 mlflow:
-  experiment_name: '"Mono-head architecture with two outputs"'
+  experiment_name: '"Mono-head architecture with one output"'
