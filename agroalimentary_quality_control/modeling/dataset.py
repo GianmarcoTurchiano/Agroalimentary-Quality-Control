@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
-from agroalimentary_quality_control.bin_col_name import bin_col_name
+from agroalimentary_quality_control.bin_col_name import get_bin_col_name
 
 
 class RocketDataset(Dataset):
@@ -41,7 +41,7 @@ class ContrastiveRocketDataset(RocketDataset):
     def __init__(self, df, target_col, fname_col, n_bins, resize=1):
         super().__init__(df, target_col, fname_col, resize)
         self.n_bins = n_bins
-        self.target_bin_col = bin_col_name(target_col)
+        self.target_bin_col = get_bin_col_name(target_col)
 
     def __getitem__(self, item):
         image, target_value = super().__getitem__(item)

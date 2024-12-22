@@ -1,6 +1,6 @@
 import argparse
 import pandas as pd
-from agroalimentary_quality_control.bin_col_name import bin_col_name
+from agroalimentary_quality_control.bin_col_name import get_bin_col_name
 
 
 if __name__ == '__main__':
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     bins = pd.cut(df[args.target_col], bins=args.n_bins)
 
-    bin_col = bin_col_name(args.target_col)
+    bin_col = get_bin_col_name(args.target_col)
     df[bin_col] = pd.Series(bins.cat.codes, dtype='int')
 
     df.to_csv(args.data_set_path, index=False)
