@@ -2,32 +2,32 @@ schema: '2.0'
 stages:
   split:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/split.py --seed 42
-      --folds 10 --data_set_path /kaggle/input/rocket-dataset/data.csv --splits_path
-      /kaggle/working/dataset/splits --train_set_file_name train.csv --test_set_file_name
-      test.csv --val_set_file_name val.csv
+      --folds 10 --data_set_path /kaggle/working/dataset/data.csv --splits_path /kaggle/working/dataset/splits
+      --train_set_file_name train.csv --test_set_file_name test.csv --val_set_file_name
+      val.csv --target_col chlorophyll
     deps:
-    - path: /kaggle/input/rocket-dataset/data.csv
+    - path: /kaggle/working/dataset/data.csv
       hash: md5
-      md5: 9b84fe25d2fa4a7ac2b760be8564f397
-      size: 56653
+      md5: e067163562c7ba95bb4b11163c84bffb
+      size: 59051
     - path: /kaggle/working/dataset/splits
       hash: md5
-      md5: 55d241f3c58a0f88b79abedb4c625b04.dir
-      size: 567210
+      md5: 3944de63684fab84d93f6be9af2f614d.dir
+      size: 591510
       nfiles: 30
     - path: agroalimentary_quality_control/dataset/split.py
       hash: md5
-      md5: 8f78912be8175ac932066d74ce553a2f
-      size: 1460
+      md5: 001d9b69247f97bccdda4635395abb81
+      size: 1736
   fit:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --train_set_file_name
-      train.csv --val_set_file_name val.csv --resize_ratio 0.3 --epochs 50 --batch_size
-      64 --patience 10 --weight_decay 0.001 --learning_rate 0.001 --seed 42 --repo_owner
+      train.csv --val_set_file_name val.csv --resize_ratio 0.3 --epochs 30 --batch_size
+      32 --patience 5 --weight_decay 0.005 --learning_rate 0.0005 --seed 42 --repo_owner
       GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control --experiment_name
-      "Mono-head architecture with two outputs" --target_cols chlorophyll ammonia
+      "Two-headed contrastive architecture with one output" --target_col chlorophyll
       --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
-      --pretrained_model_output_size 1081
+      --pretrained_model_output_size 1081 --filename_col fname --n_bins 4
     deps:
     - path: ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       hash: md5
@@ -35,28 +35,28 @@ stages:
       size: 29159761
     - path: /kaggle/working/dataset/splits
       hash: md5
-      md5: 55d241f3c58a0f88b79abedb4c625b04.dir
-      size: 567210
+      md5: 3944de63684fab84d93f6be9af2f614d.dir
+      size: 591510
       nfiles: 30
     - path: agroalimentary_quality_control/modeling/fit.py
       hash: md5
-      md5: 829585275b6e37c8c8428b293411d5a3
-      size: 7013
+      md5: 61c976062ffd9ce4fe2e8cc87cbe0924
+      size: 9383
     outs:
     - path: ./models/folds
       hash: md5
-      md5: f806de273211632d481633fe77a9dea7.dir
-      size: 91352162
+      md5: 1d331798bbba889fc43c6f703088911d.dir
+      size: 153261030
       nfiles: 10
   transform:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/transform.py --seed
-      42 --data_set_path /kaggle/input/rocket-dataset/data.csv --pics_path /kaggle/input/rocket-dataset/pics
+      42 --data_set_path /kaggle/working/dataset/data.csv --pics_path /kaggle/input/rocket-dataset/pics
       --augs_per_pic 5 --aug_pics_path /kaggle/working/dataset/aug_pics
     deps:
-    - path: /kaggle/input/rocket-dataset/data.csv
+    - path: /kaggle/working/dataset/data.csv
       hash: md5
-      md5: 9b84fe25d2fa4a7ac2b760be8564f397
-      size: 56653
+      md5: e067163562c7ba95bb4b11163c84bffb
+      size: 59051
     - path: agroalimentary_quality_control/dataset/transform.py
       hash: md5
       md5: 96f18b33b9742b6cdd7c27c91276f39f
@@ -69,13 +69,13 @@ stages:
     deps:
     - path: /kaggle/working/dataset/aug_splits
       hash: md5
-      md5: 0dac12751a631a228870ce471c74b1c4.dir
-      size: 5887350
+      md5: 7ab30d0df3f891e658ce5b8ba3c9a707.dir
+      size: 6030750
       nfiles: 30
     - path: /kaggle/working/dataset/splits
       hash: md5
-      md5: 55d241f3c58a0f88b79abedb4c625b04.dir
-      size: 567210
+      md5: 3944de63684fab84d93f6be9af2f614d.dir
+      size: 591510
       nfiles: 30
     - path: agroalimentary_quality_control/dataset/augment.py
       hash: md5
@@ -104,3 +104,16 @@ stages:
       hash: md5
       md5: f748f520a190f735c77921447ebc3881
       size: 5447
+  binning:
+    cmd: .venv/bin/python agroalimentary_quality_control/dataset/binning.py --original_data_set_path
+      /kaggle/input/rocket-dataset/data.csv --data_set_path /kaggle/working/dataset/data.csv
+      --n_bins 4 --target_col chlorophyll
+    deps:
+    - path: /kaggle/input/rocket-dataset/data.csv
+      hash: md5
+      md5: 9b84fe25d2fa4a7ac2b760be8564f397
+      size: 56653
+    - path: agroalimentary_quality_control/dataset/binning.py
+      hash: md5
+      md5: 017688ad6a6353ea9ffc8d4142f11f0f
+      size: 713
