@@ -85,25 +85,25 @@ stages:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/evaluate.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --test_set_file_name
       test.csv --aug_pics_path /kaggle/working/dataset/aug_pics --resize_ratio 0.3
-      --batch_size 64 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
-      --experiment_name "Mono-head architecture with two outputs" --target_cols chlorophyll
-      ammonia --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
+      --batch_size 32 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
+      --experiment_name "Two-headed contrastive architecture with one output" --target_col
+      chlorophyll --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       --pretrained_model_output_size 1081 --filename_col fname --pics_path /kaggle/input/rocket-dataset/pics
     deps:
     - path: ./models/folds
       hash: md5
-      md5: f806de273211632d481633fe77a9dea7.dir
-      size: 91352162
+      md5: 1d331798bbba889fc43c6f703088911d.dir
+      size: 153261030
       nfiles: 10
     - path: /kaggle/working/dataset/aug_splits
       hash: md5
-      md5: 0dac12751a631a228870ce471c74b1c4.dir
-      size: 5887350
+      md5: 7ab30d0df3f891e658ce5b8ba3c9a707.dir
+      size: 6030750
       nfiles: 30
     - path: agroalimentary_quality_control/modeling/evaluate.py
       hash: md5
-      md5: f748f520a190f735c77921447ebc3881
-      size: 5447
+      md5: 27878ee942f558a8b101e6272402aa7e
+      size: 5294
   binning:
     cmd: .venv/bin/python agroalimentary_quality_control/dataset/binning.py --original_data_set_path
       /kaggle/input/rocket-dataset/data.csv --data_set_path /kaggle/working/dataset/data.csv
