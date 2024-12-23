@@ -14,6 +14,8 @@ from agroalimentary_quality_control.modeling.regressor import RocketRegressor
 
 from sklearn.metrics import r2_score, mean_squared_error
 
+import time
+
 
 def evaluation(
     aug_splits_path,
@@ -25,6 +27,7 @@ def evaluation(
     batch_size,
     model,
     device,
+    timestamp,
     evaluation_label,
     fname_prefix_filter='',
 ):
@@ -84,8 +87,8 @@ def evaluation(
         print(evaluation_label)
 
         with mlflow.start_run(run_id=child_run_id, parent_run_id=parent_run_id):
-            mlflow.log_metric(f"MSE {evaluation_label}", mse)
-            mlflow.log_metric(f"R2 {evaluation_label}", r2)
+            mlflow.log_metric(f"MSE {evaluation_label}", mse, timestamp=timestamp)
+            mlflow.log_metric(f"R2 {evaluation_label}", r2, timestamp=timestamp)
 
             print(f"MSE: {mse}")
             print(f"R2: {r2}")
@@ -96,11 +99,11 @@ def evaluation(
     avg_mse = np.array(mse_splits).mean(axis=0)
 
     with mlflow.start_run(run_id=parent_run_id):
-        mlflow.log_metric(f"Avg MSE {evaluation_label}", avg_mse[i])
-        mlflow.log_metric(f"Avg R2 {evaluation_label}", avg_r2[i])
+        mlflow.log_metric(f"Avg MSE {evaluation_label}", avg_mse, timestamp=timestamp)
+        mlflow.log_metric(f"Avg R2 {evaluation_label}", avg_r2, timestamp=timestamp)
 
-        print(f"Avg. MSE ({evaluation_label}): {avg_mse[i]}")
-        print(f"Avg. R2 ({evaluation_label}): {avg_r2[i]}")
+        print(f"Avg. MSE ({evaluation_label}): {avg_mse}")
+        print(f"Avg. R2 ({evaluation_label}): {avg_r2}")
     
     print()
 
@@ -136,6 +139,8 @@ if __name__ == '__main__':
         device
     )
 
+    timestamp = int(time.time() * 1000)
+
     evaluation(
         args.aug_splits_path,
         args.test_set_file_name,
@@ -146,6 +151,7 @@ if __name__ == '__main__':
         args.batch_size,
         model,
         device,
+        timestamp,
         evaluation_label='Original',
         fname_prefix_filter=args.pics_path
     )
@@ -160,6 +166,7 @@ if __name__ == '__main__':
         args.batch_size,
         model,
         device,
+        timestamp,
         evaluation_label='Augmentations',
         fname_prefix_filter=args.aug_pics_path
     )
@@ -174,5 +181,6 @@ if __name__ == '__main__':
         args.batch_size,
         model,
         device,
+        timestamp,
         evaluation_label='All'
     )
