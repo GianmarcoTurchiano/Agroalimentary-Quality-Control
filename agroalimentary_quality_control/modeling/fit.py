@@ -34,7 +34,6 @@ def training_step(model, loader, device, optimizer, regression_loss_fn, contrast
     tot_regression_loss = 0
     tot_contrastive_loss = 0
 
-
     for positives, anchors, negatives, targets in tqdm(
         loader,
         desc="Training",
@@ -45,8 +44,10 @@ def training_step(model, loader, device, optimizer, regression_loss_fn, contrast
 
         optimizer.zero_grad()
 
-        _, embeddings_anc = model(anchors)
-        _, embeddings_neg = model(negatives)
+        with torch.no_grad():
+            _, embeddings_anc = model(anchors)
+            _, embeddings_neg = model(negatives)
+        
         predictions, embeddings_pos = model(positives)
 
         regression_loss = regression_loss_fn(predictions, targets)
