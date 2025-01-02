@@ -27,19 +27,48 @@ class RSELoss(Module):
         return rse
 
 
-def training_step(model, loader, device, optimizer, regression_loss_fn, contrastive_loss_fn):
+def training_step(model, loader, device, optimizer, regression_loss_fn, contrastive_loss_fn, n_bins):
     model.train()
 
     tot_train_loss = 0
     tot_regression_loss = 0
     tot_contrastive_loss = 0
 
-    for positives, anchors, negatives, targets in tqdm(
+    for images, targets in tqdm(
         loader,
         desc="Training",
         leave=False
     ):
-        positives, targets = positives.to(device), targets.to(device)
+        quantiles = torch.quantile(targets, torch.linspace(0, 1, steps=n_bins))
+        bin_edges = quantiles.tolist()
+        bin_indices = torch.bucketize(targets, torch.tensor(bin_edges))
+        negative_bin_indices = (bin_indices + (n_bins / 2)) % n_bins
+
+        anchors = []
+        negatives = []
+
+        for i in range(len(images)):
+            anchor_bin = bin_indices[i]
+            negative_bin = negative_bin_indices[i]
+            
+            anchor_indices = torch.where(bin_indices == anchor_bin)[0]
+            negative_indices = torch.where(bin_indices == negative_bin)[0]
+            
+            anchor_idx = anchor_indices[torch.randint(0, len(anchor_indices), (1,))]
+            negative_idx = negative_indices[torch.randint(0, len(negative_indices), (1,))]
+            
+            anchor_image = images[anchor_idx].squeeze(0)
+            negative_image = images[negative_idx].squeeze(0)
+            
+            # Append the anchor and negative to the respective lists
+            anchors.append(anchor_image)
+            negatives.append(negative_image)
+
+        # Convert the list of anchors and negatives into tensors
+        anchors = torch.stack(anchors)  # Shape: (total_count, c, h, w)
+        negatives = torch.stack(negatives)  # Shape: (total_count, c, h, w)
+
+        images, targets = images.to(device), targets.to(device)
         anchors, negatives = anchors.to(device), negatives.to(device)
 
         optimizer.zero_grad()
@@ -48,7 +77,7 @@ def training_step(model, loader, device, optimizer, regression_loss_fn, contrast
             _, embeddings_anc = model(anchors)
             _, embeddings_neg = model(negatives)
         
-        predictions, embeddings_pos = model(positives)
+        predictions, embeddings_pos = model(images)
 
         regression_loss = regression_loss_fn(predictions, targets)
         contrastive_loss = contrastive_loss_fn(embeddings_anc, embeddings_pos, embeddings_neg)
@@ -107,11 +136,10 @@ def _fit(
     train_df = pd.read_csv(f'{split_path}/{train_set_file_name}')
     val_df = pd.read_csv(f'{split_path}/{val_set_file_name}')
 
-    train_set = ContrastiveRocketDataset(
+    train_set = RocketDataset(
         train_df,
         target_col,
         filename_col,
-        n_bins,
         resize=resize_ratio
     )
 
@@ -158,7 +186,8 @@ def _fit(
             device,
             optimizer,
             regression_loss_fn,
-            contrastive_loss_fn
+            contrastive_loss_fn,
+            n_bins
         )
 
         mlflow.log_metric(f"Train RSE Loss", avg_regression_loss, step=epoch)
