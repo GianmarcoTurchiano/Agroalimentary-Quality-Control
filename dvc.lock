@@ -23,7 +23,7 @@ stages:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --train_set_file_name
       train.csv --val_set_file_name val.csv --resize_ratio 0.3 --epochs 30 --batch_size
-      32 --patience 5 --weight_decay 0.005 --learning_rate 0.0005 --seed 42 --repo_owner
+      64 --patience 5 --weight_decay 0.001 --learning_rate 0.0001 --seed 42 --repo_owner
       GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control --experiment_name
       "Two-headed contrastive architecture with one output" --target_col chlorophyll
       --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
@@ -40,12 +40,12 @@ stages:
       nfiles: 30
     - path: agroalimentary_quality_control/modeling/fit.py
       hash: md5
-      md5: 61c976062ffd9ce4fe2e8cc87cbe0924
-      size: 9383
+      md5: 2ed30333242109db047f37869003326f
+      size: 10746
     outs:
     - path: ./models/folds
       hash: md5
-      md5: 1d331798bbba889fc43c6f703088911d.dir
+      md5: fcd912541a2d89805092e868fbc4f04c.dir
       size: 153261030
       nfiles: 10
   transform:
@@ -85,14 +85,14 @@ stages:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/evaluate.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --test_set_file_name
       test.csv --aug_pics_path /kaggle/working/dataset/aug_pics --resize_ratio 0.3
-      --batch_size 32 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
+      --batch_size 64 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
       --experiment_name "Two-headed contrastive architecture with one output" --target_col
       chlorophyll --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       --pretrained_model_output_size 1081 --filename_col fname --pics_path /kaggle/input/rocket-dataset/pics
     deps:
     - path: ./models/folds
       hash: md5
-      md5: 1d331798bbba889fc43c6f703088911d.dir
+      md5: fcd912541a2d89805092e868fbc4f04c.dir
       size: 153261030
       nfiles: 10
     - path: /kaggle/working/dataset/aug_splits
