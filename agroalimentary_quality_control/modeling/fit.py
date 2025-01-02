@@ -73,9 +73,8 @@ def training_step(model, loader, device, optimizer, regression_loss_fn, contrast
 
         optimizer.zero_grad()
 
-        with torch.no_grad():
-            _, embeddings_anc = model(anchors)
-            _, embeddings_neg = model(negatives)
+        _, embeddings_anc = model(anchors)
+        _, embeddings_neg = model(negatives)
         
         predictions, embeddings_pos = model(images)
 
