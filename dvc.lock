@@ -22,8 +22,8 @@ stages:
   fit:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/fit.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --train_set_file_name
-      train.csv --val_set_file_name val.csv --resize_ratio 0.3 --epochs 30 --batch_size
-      64 --patience 5 --weight_decay 0.001 --learning_rate 0.0001 --seed 42 --repo_owner
+      train.csv --val_set_file_name val.csv --resize_ratio 0.3 --epochs 50 --batch_size
+      32 --patience 5 --weight_decay 0.001 --learning_rate 7.5e-05 --seed 42 --repo_owner
       GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control --experiment_name
       "Two-headed contrastive architecture with one output" --target_col chlorophyll
       --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
@@ -40,12 +40,12 @@ stages:
       nfiles: 30
     - path: agroalimentary_quality_control/modeling/fit.py
       hash: md5
-      md5: 2ed30333242109db047f37869003326f
-      size: 10746
+      md5: 889e18ee949eecc88dbeae6dff0edf84
+      size: 10708
     outs:
     - path: ./models/folds
       hash: md5
-      md5: fcd912541a2d89805092e868fbc4f04c.dir
+      md5: e0f131c1b703148249a722d62c9a98a4.dir
       size: 153261030
       nfiles: 10
   transform:
@@ -85,14 +85,14 @@ stages:
     cmd: .venv/bin/python agroalimentary_quality_control/modeling/evaluate.py --models_path
       ./models/folds --aug_splits_path /kaggle/working/dataset/aug_splits --test_set_file_name
       test.csv --aug_pics_path /kaggle/working/dataset/aug_pics --resize_ratio 0.3
-      --batch_size 64 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
+      --batch_size 32 --repo_owner GianmarcoTurchiano --repo_name Agroalimentary-Quality-Control
       --experiment_name "Two-headed contrastive architecture with one output" --target_col
       chlorophyll --pretrained_model_path ./models/pretrained/mobilenet_v2_weights_best_acc.tar
       --pretrained_model_output_size 1081 --filename_col fname --pics_path /kaggle/input/rocket-dataset/pics
     deps:
     - path: ./models/folds
       hash: md5
-      md5: fcd912541a2d89805092e868fbc4f04c.dir
+      md5: e0f131c1b703148249a722d62c9a98a4.dir
       size: 153261030
       nfiles: 10
     - path: /kaggle/working/dataset/aug_splits
