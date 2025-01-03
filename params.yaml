@@ -30,11 +30,11 @@ data:
       path: /kaggle/working/dataset/aug_pics
 
 training:
-  epochs: 50
+  epochs: 30
   batch_size: 32
-  patience: 5
-  learning_rate: 5e-5
-  weight_decay: 5e-3
+  patience: 3
+  learning_rate: 5e-4
+  weight_decay: 5e-2
   random_seed: 42
 
 dagshub:
