@@ -251,6 +251,7 @@ if __name__ == '__main__':
         mlflow.log_param("Weight decay", args.weight_decay)
         mlflow.log_param("Resize ratio", args.resize_ratio)
         mlflow.log_param("Random seed", args.seed)
+        mlflow.log_param("Target", args.target_col)
 
         splits = os.listdir(args.aug_splits_path)
 
