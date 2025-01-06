@@ -43,7 +43,7 @@ def dynamic_binning(images, targets, n_bins):
         anchor_indices = torch.where(bin_indices == anchor_bin)[0]
         negative_indices = torch.where(bin_indices == negative_bin)[0]
 
-        if len(negative_indices) == 0:
+        if len(negative_indices) == 0 or torch.rand(1).item() < 0.5:
             anchor_idx = anchor_indices[torch.randint(0, len(anchor_indices), (1,))]
             anchor_image = images[anchor_idx].squeeze(0)
             images_contrast.append(anchor_image)
