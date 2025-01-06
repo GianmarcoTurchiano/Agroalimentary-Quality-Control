@@ -21,13 +21,15 @@ class RocketRegressor(nn.Module):
 
         self.regressor = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(128, 256),
+            nn.Linear(128, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
             nn.ReLU(),
             nn.Linear(256, 256),
             nn.ReLU(),
             nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, 128),
             nn.ReLU(),
             nn.Linear(128, 1)
         )
