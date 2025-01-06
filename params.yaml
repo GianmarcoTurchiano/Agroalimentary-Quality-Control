@@ -33,7 +33,7 @@ training:
   epochs: 30
   batch_size: 32
   patience: 5
-  learning_rate: 1e-5
+  learning_rate: 1e-4
   weight_decay: 1e-3
   random_seed: 42
 
@@ -42,4 +42,4 @@ dagshub:
   repo_name: Agroalimentary-Quality-Control
 
 mlflow:
-  experiment_name: '"Two-headed contrastive architecture with one output"'
+  experiment_name: '"Pair contrastive learning in two steps"'

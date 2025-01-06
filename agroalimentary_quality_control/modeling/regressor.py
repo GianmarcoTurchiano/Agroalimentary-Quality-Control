@@ -21,7 +21,7 @@ class RocketRegressor(nn.Module):
 
         self.regressor = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(last_channel_width, 1)
+            nn.Linear(128, 1)
         )
 
         self.embedder = nn.Sequential(
