@@ -82,7 +82,7 @@ def contrastive_training_step(model, loader, device, optimizer, contrastive_loss
         _, img_emb = model(images)
         _, con_emb = model(images_contrast)
 
-        train_loss = contrastive_loss_fn(img_emb, con_emb)
+        train_loss = contrastive_loss_fn(img_emb, con_emb, labels)
         train_loss.backward()
 
         optimizer.step()
@@ -112,7 +112,7 @@ def contrastive_validation_step(model, loader, device, contrastive_loss_fn, n_bi
             _, img_emb = model(images)
             _, con_emb = model(images_contrast)
 
-            val_loss = contrastive_loss_fn(img_emb, con_emb)
+            val_loss = contrastive_loss_fn(img_emb, con_emb, labels)
 
             val_loss_tot += val_loss.item()
 
