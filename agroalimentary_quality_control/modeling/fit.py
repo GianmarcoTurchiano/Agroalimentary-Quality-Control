@@ -1,6 +1,6 @@
 import torch
 from torch import optim
-from torch.nn import Module, TripletMarginLoss, MSELoss
+from torch.nn import Module, CosineEmbeddingLoss, MSELoss
 from torch.utils.data import DataLoader
 import dagshub
 import mlflow
@@ -218,7 +218,7 @@ def _fit(
 
     tqdm.write('CONTRASTIVE TRAINING')
 
-    contrastive_loss_fn = TripletMarginLoss()
+    contrastive_loss_fn = CosineEmbeddingLoss()
 
     best_train_loss_con = float('inf')
     best_val_loss_con = float('inf')
