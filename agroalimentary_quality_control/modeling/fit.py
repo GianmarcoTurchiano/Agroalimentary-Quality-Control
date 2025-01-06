@@ -253,7 +253,7 @@ def _fit(
             n_bins
         )
 
-        mlflow.log_metric(f"Val CosEmb Loss", avg_val_loss, step=epoch)
+        mlflow.log_metric(f"Val. CosEmb Loss", avg_val_loss, step=epoch)
         tqdm.write(f"Epoch {epoch}, Validation Cosine Embedding Loss: {avg_val_loss}")
 
         # Early stopping
@@ -262,8 +262,8 @@ def _fit(
             best_val_loss_con = avg_val_loss
             epochs_no_improve = 0
             
-            mlflow.log_metric(f"Out Val CosEmb Loss", avg_val_loss, step=epoch)
-            mlflow.log_metric(f"Out Val CosEmb Loss", avg_train_loss, step=epoch)
+            mlflow.log_metric(f"Out Val. CosEmb Loss", avg_val_loss, step=epoch)
+            mlflow.log_metric(f"Out Train CosEmb Loss", avg_train_loss, step=epoch)
             
             tqdm.write("New best model found.")
         else:
@@ -314,7 +314,7 @@ def _fit(
             regression_loss_fn
         )
 
-        mlflow.log_metric(f"Val MSE Loss", avg_val_loss, step=epoch)
+        mlflow.log_metric(f"Val. MSE Loss", avg_val_loss, step=epoch)
         tqdm.write(f"Epoch {epoch}, Validation MSE Loss: {avg_val_loss}")
 
         # Early stopping
@@ -329,8 +329,8 @@ def _fit(
                 'parent_run_id': parent_run.info.run_id
             }, model_path)
             
-            mlflow.log_metric(f"Out Val MSE Loss", avg_val_loss, step=epoch)
-            mlflow.log_metric(f"Out Val MSE Loss", avg_train_loss, step=epoch)
+            mlflow.log_metric(f"Out Val. MSE Loss", avg_val_loss, step=epoch)
+            mlflow.log_metric(f"Out Train MSE Loss", avg_train_loss, step=epoch)
             
             tqdm.write("Best model weights have been saved.")
         else:
