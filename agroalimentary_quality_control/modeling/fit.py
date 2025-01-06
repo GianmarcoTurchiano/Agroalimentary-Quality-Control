@@ -27,73 +27,127 @@ class RSELoss(Module):
         return rse
 
 
-def training_step(model, loader, device, optimizer, regression_loss_fn, contrastive_loss_fn, n_bins):
+def dynamic_binning(images, targets, n_bins):
+    quantiles = torch.quantile(targets, torch.linspace(0, 1, steps=n_bins))
+    bin_edges = quantiles.tolist()
+    bin_indices = torch.bucketize(targets, torch.tensor(bin_edges))
+    negative_bin_indices = (bin_indices + (n_bins / 2)) % n_bins
+
+    images_contrast = []
+    labels = []
+
+    for i in range(len(images)):
+        anchor_bin = bin_indices[i]
+        negative_bin = negative_bin_indices[i]
+        
+        anchor_indices = torch.where(bin_indices == anchor_bin)[0]
+        negative_indices = torch.where(bin_indices == negative_bin)[0]
+
+        if len(negative_indices) == 0:
+            anchor_idx = anchor_indices[torch.randint(0, len(anchor_indices), (1,))]
+            anchor_image = images[anchor_idx].squeeze(0)
+            images_contrast.append(anchor_image)
+            labels.append(1)
+        else:
+            negative_idx = negative_indices[torch.randint(0, len(negative_indices), (1,))]
+            negative_image = images[negative_idx].squeeze(0)
+            images_contrast.append(negative_image)
+            labels.append(-1)
+
+    images_contrast = torch.stack(images_contrast)
+
+    labels = torch.tensor(labels)
+
+    return images_contrast, labels
+
+
+def contrastive_training_step(model, loader, device, optimizer, contrastive_loss_fn, n_bins):
     model.train()
 
     tot_train_loss = 0
-    tot_regression_loss = 0
-    tot_contrastive_loss = 0
 
     for images, targets in tqdm(
         loader,
-        desc="Training",
+        desc="Contrastive training",
         leave=False
     ):
-        quantiles = torch.quantile(targets, torch.linspace(0, 1, steps=n_bins))
-        bin_edges = quantiles.tolist()
-        bin_indices = torch.bucketize(targets, torch.tensor(bin_edges))
-        negative_bin_indices = (bin_indices + (n_bins / 2)) % n_bins
+        images_contrast, labels = dynamic_binning(images, targets, n_bins)
 
-        anchors = []
-        negatives = []
-
-        for i in range(len(images)):
-            anchor_bin = bin_indices[i]
-            negative_bin = negative_bin_indices[i]
-            
-            anchor_indices = torch.where(bin_indices == anchor_bin)[0]
-            negative_indices = torch.where(bin_indices == negative_bin)[0]
-            
-            anchor_idx = anchor_indices[torch.randint(0, len(anchor_indices), (1,))]
-            negative_idx = negative_indices[torch.randint(0, len(negative_indices), (1,))]
-            
-            anchor_image = images[anchor_idx].squeeze(0)
-            negative_image = images[negative_idx].squeeze(0)
-            
-            # Append the anchor and negative to the respective lists
-            anchors.append(anchor_image)
-            negatives.append(negative_image)
-
-        # Convert the list of anchors and negatives into tensors
-        anchors = torch.stack(anchors)  # Shape: (total_count, c, h, w)
-        negatives = torch.stack(negatives)  # Shape: (total_count, c, h, w)
-
-        images, targets = images.to(device), targets.to(device)
-        anchors, negatives = anchors.to(device), negatives.to(device)
-
+        images = images.to(device)
+        images_contrast = images_contrast.to(device)
+        labels = labels.to(device)
+        
         optimizer.zero_grad()
 
-        _, embeddings_anc = model(anchors)
-        _, embeddings_neg = model(negatives)
-        
-        predictions, embeddings_pos = model(images)
+        _, img_emb = model(images)
+        _, con_emb = model(images_contrast)
 
-        regression_loss = regression_loss_fn(predictions, targets)
-        contrastive_loss = contrastive_loss_fn(embeddings_anc, embeddings_pos, embeddings_neg)
-
-        train_loss = (regression_loss + contrastive_loss) / 2
+        train_loss = contrastive_loss_fn(img_emb, con_emb)
         train_loss.backward()
 
         optimizer.step()
 
         tot_train_loss += train_loss.item()
-        tot_regression_loss += regression_loss.item()
-        tot_contrastive_loss += contrastive_loss.item()
 
-    return tot_train_loss / len(loader), tot_regression_loss / len(loader), tot_contrastive_loss / len(loader)
+    return tot_train_loss / len(loader)
 
 
-def validation_step(model, loader, device, criterion):
+def contrastive_validation_step(model, loader, device, contrastive_loss_fn, n_bins):
+    model.eval()
+
+    val_loss_tot = 0
+
+    with torch.no_grad():
+        for images, targets in tqdm(
+            loader,
+            desc="Validation contrastive",
+            leave=False
+        ):
+            images_contrast, labels = dynamic_binning(images, targets, n_bins)
+
+            images = images.to(device)
+            images_contrast = images_contrast.to(device)
+            labels = labels.to(device)
+
+            _, img_emb = model(images)
+            _, con_emb = model(images_contrast)
+
+            val_loss = contrastive_loss_fn(img_emb, con_emb)
+
+            val_loss_tot += val_loss.item()
+
+    return val_loss_tot / len(loader)
+
+
+def regression_training_step(model, loader, device, optimizer, regression_loss_fn):
+    model.train()
+
+    tot_train_loss = 0
+
+    for images, targets in tqdm(
+        loader,
+        desc="Training regression",
+        leave=False
+    ):
+        images = images.to(device)
+        targets = targets.to(device)
+
+        optimizer.zero_grad()
+        
+        predictions, _ = model(images)
+
+        train_loss = regression_loss_fn(predictions, targets)
+
+        train_loss.backward()
+
+        optimizer.step()
+
+        tot_train_loss += train_loss.item()
+
+    return tot_train_loss / len(loader)
+
+
+def regression_validation_step(model, loader, device, criterion):
     model.eval()
 
     val_loss = 0
@@ -101,7 +155,7 @@ def validation_step(model, loader, device, criterion):
     with torch.no_grad():
         for images, targets in tqdm(
             loader,
-            desc="Validation",
+            desc="Validation regression",
             leave=False
         ):
             images, targets = images.to(device), targets.to(device)
@@ -160,9 +214,15 @@ def _fit(
     )
     model = model.to(device)
 
+    child_run = mlflow.start_run(run_name=f"Fold #{fold}", nested=True)
+
+    tqdm.write('CONTRASTIVE TRAINING')
+
     contrastive_loss_fn = TripletMarginLoss()
-    regression_loss_fn = RSELoss()
-    val_loss_fn = MSELoss()
+
+    best_train_loss_con = float('inf')
+    best_val_loss_con = float('inf')
+    epochs_no_improve = 0
 
     optimizer = optim.Adam(
         model.parameters(),
@@ -170,49 +230,97 @@ def _fit(
         weight_decay=weight_decay
     )
 
-    best_train_loss = float('inf')
-    best_val_loss = float('inf')
+    for epoch in range(1, epochs + 1):
+        tqdm.write(f'Epoch {epoch} out of {epochs}')
+        
+        avg_train_loss = contrastive_training_step(
+            model,
+            train_loader,
+            device,
+            optimizer,
+            contrastive_loss_fn,
+            n_bins
+        )
+
+        mlflow.log_metric(f"Train CosEmb Loss", avg_train_loss, step=epoch)
+        tqdm.write(f"Epoch {epoch}, Train Cosine Embedding Loss: {avg_train_loss}")
+
+        avg_val_loss = contrastive_validation_step(
+            model,
+            val_loader,
+            device,
+            contrastive_loss_fn,
+            n_bins
+        )
+
+        mlflow.log_metric(f"Val CosEmb Loss", avg_val_loss, step=epoch)
+        tqdm.write(f"Epoch {epoch}, Validation Cosine Embedding Loss: {avg_val_loss}")
+
+        # Early stopping
+        if avg_val_loss < best_val_loss_con:
+            best_train_loss_con = avg_train_loss
+            best_val_loss_con = avg_val_loss
+            epochs_no_improve = 0
+            
+            mlflow.log_metric(f"Out Val CosEmb Loss", avg_val_loss, step=epoch)
+            mlflow.log_metric(f"Out Val CosEmb Loss", avg_train_loss, step=epoch)
+            
+            tqdm.write("New best model found.")
+        else:
+            epochs_no_improve += 1
+
+        if epochs_no_improve == patience:
+            tqdm.write(f"Early stopping triggered after {epoch} epochs.")
+            break
+
+    tqdm.write('REGRESSION TRAINING')
+
+    for param in model.model.parameters():
+        param.requires_grad = False
+
+    for param in model.embedder.parameters():
+        param.requires_grad = False
+
+    regression_loss_fn = MSELoss()
+
+    best_train_loss_reg = float('inf')
+    best_val_loss_reg = float('inf')
     epochs_no_improve = 0
 
-    child_run = mlflow.start_run(run_name=f"Fold #{fold}", nested=True)
+    optimizer = optim.Adam(
+        model.parameters(),
+        lr=learning_rate,
+        weight_decay=weight_decay
+    )
 
     for epoch in range(1, epochs + 1):
         tqdm.write(f'Epoch {epoch} out of {epochs}')
         
-        avg_train_loss, avg_regression_loss, avg_contrastive_loss = training_step(
+        avg_train_loss = regression_training_step(
             model,
             train_loader,
             device,
             optimizer,
             regression_loss_fn,
-            contrastive_loss_fn,
-            n_bins
         )
 
-        mlflow.log_metric(f"Train RSE Loss", avg_regression_loss, step=epoch)
-        mlflow.log_metric(f"Train Triplet Loss", avg_contrastive_loss, step=epoch)
-        mlflow.log_metric(f"Train Total Loss", avg_train_loss, step=epoch)
-        
-        tqdm.write(f"Epoch {epoch}, Train Total Loss: {avg_train_loss}")
-        tqdm.write(f"Train RSE Loss: {avg_regression_loss}")
-        tqdm.write(f"Train Triplet Loss: {avg_contrastive_loss}")
+        mlflow.log_metric(f"Train MSE Loss", avg_train_loss, step=epoch)
+        tqdm.write(f"Epoch {epoch}, Train MSE Loss: {avg_train_loss}")
 
-        avg_val_loss = validation_step(
+        avg_val_loss = regression_validation_step(
             model,
             val_loader,
             device,
-            val_loss_fn
+            regression_loss_fn
         )
 
-        mlflow.log_metric(f"Validation MSE Loss", avg_val_loss, step=epoch)
+        mlflow.log_metric(f"Val MSE Loss", avg_val_loss, step=epoch)
         tqdm.write(f"Epoch {epoch}, Validation MSE Loss: {avg_val_loss}")
 
         # Early stopping
-        if avg_val_loss < best_val_loss:
-            best_train_loss = avg_train_loss
-            best_regression_loss = avg_regression_loss
-            best_contrastive_loss = avg_contrastive_loss
-            best_val_loss = avg_val_loss
+        if avg_val_loss < best_val_loss_reg:
+            best_val_loss_reg = avg_train_loss
+            best_val_loss_reg = avg_val_loss
             epochs_no_improve = 0
             
             torch.save({
@@ -221,8 +329,8 @@ def _fit(
                 'parent_run_id': parent_run.info.run_id
             }, model_path)
             
-            mlflow.log_metric(f"Output Validation MSE Loss", avg_val_loss, step=epoch)
-            mlflow.log_metric(f"Output Train RSE Loss", avg_train_loss, step=epoch)
+            mlflow.log_metric(f"Out Val MSE Loss", avg_val_loss, step=epoch)
+            mlflow.log_metric(f"Out Val MSE Loss", avg_train_loss, step=epoch)
             
             tqdm.write("Best model weights have been saved.")
         else:
@@ -234,7 +342,7 @@ def _fit(
 
     mlflow.end_run()
 
-    return best_train_loss, best_regression_loss, best_contrastive_loss, best_val_loss
+    return best_train_loss_con, best_val_loss_con, best_train_loss_reg, best_val_loss_reg
 
 
 if __name__ == '__main__':
@@ -312,14 +420,14 @@ if __name__ == '__main__':
 
             losses.append(loss)
 
-        avg_train_loss, avg_regr_loss, avg_cont_loss, avg_val_loss = np.array(losses).mean(axis=0)
+        avg_train_loss_con, avg_val_loss_con, avg_train_loss_reg, avg_val_loss_reg = np.array(losses).mean(axis=0)
 
-        mlflow.log_metric("Avg. Train Total Loss", avg_train_loss)
-        mlflow.log_metric("Avg. Train RSE Loss", avg_regr_loss)
-        mlflow.log_metric("Avg. Train Triplet Loss", avg_cont_loss)
-        mlflow.log_metric("Avg. Validation MSE Loss", avg_val_loss)
+        mlflow.log_metric("Avg. Train CosEmb Loss", avg_train_loss_con)
+        mlflow.log_metric("Avg. Val. CosEmb Loss", avg_val_loss_con)
+        mlflow.log_metric("Avg. Train MSE Loss", avg_train_loss_reg)
+        mlflow.log_metric("Avg. Val. MSE Loss", avg_val_loss_reg)
 
-        tqdm.write(f"Avg. Train Total Loss {avg_train_loss}")
-        tqdm.write(f"Avg. Train RSE Loss {avg_regr_loss}")
-        tqdm.write(f"Avg. Train Triplet Loss {avg_cont_loss}")
-        tqdm.write(f"Avg. Validation MSE Loss {avg_val_loss}")
+        tqdm.write(f"Avg. Train CosEmb Loss {avg_train_loss_con}")
+        tqdm.write(f"Avg. Val. CosEmb Loss {avg_val_loss_con}")
+        tqdm.write(f"Avg. Train MSE Loss {avg_train_loss_reg}")
+        tqdm.write(f"Avg. Val. MSE Loss {avg_val_loss_reg}")

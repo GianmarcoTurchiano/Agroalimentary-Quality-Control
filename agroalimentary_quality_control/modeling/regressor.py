@@ -20,7 +20,7 @@ class RocketRegressor(nn.Module):
         last_channel_width = self.model.last_channel
 
         self.regressor = nn.Sequential(
-            nn.Dropout(p=final_dropout_p),
+            nn.ReLU(),
             nn.Linear(last_channel_width, 1)
         )
 
@@ -36,7 +36,9 @@ class RocketRegressor(nn.Module):
         x = nn.functional.adaptive_avg_pool2d(x, (1, 1))
         x = torch.flatten(x, 1)
 
-        prediction = self.regressor(x)
         embedding = self.embedder(x)
-
+        
+        prediction = self.regressor(embedding)
+        
         return prediction, embedding
+
