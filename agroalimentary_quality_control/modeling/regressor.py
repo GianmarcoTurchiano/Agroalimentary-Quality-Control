@@ -23,7 +23,11 @@ class RocketRegressor(nn.Module):
             nn.ReLU(),
             nn.Linear(128, 256),
             nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU(),
             nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
             nn.ReLU(),
             nn.Linear(128, 1)
         )
