@@ -30,6 +30,7 @@ class RocketRegressor(nn.Module):
             nn.Linear(256, 256),
             nn.ReLU(),
             nn.Linear(256, 128),
+            nn.Dropout(p=final_dropout_p),
             nn.ReLU(),
             nn.Linear(128, 1)
         )

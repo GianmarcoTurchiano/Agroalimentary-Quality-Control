@@ -278,8 +278,7 @@ def _fit(
     for param in model.model.parameters():
         param.requires_grad = False
 
-    for param in model.embedder.parameters():
-        param.requires_grad = False
+    layers = list(model.model.children())[::-1]
 
     regression_loss_fn = MSELoss()
 
@@ -294,6 +293,12 @@ def _fit(
     )
 
     for epoch in range(1, epochs + 1):
+        if epoch % 4 == 0:
+            if layers:
+                layer = layers.pop(0)
+                for param in layer.parameters():
+                    param.requires_grad = True
+
         tqdm.write(f'Epoch {epoch} out of {epochs}')
         
         avg_train_loss = regression_training_step(
