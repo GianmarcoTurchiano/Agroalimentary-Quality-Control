@@ -21,25 +21,25 @@ class RocketRegressor(nn.Module):
 
         self.regressor = nn.Sequential(
             nn.ReLU(),
-            nn.Linear(128, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.Dropout(p=final_dropout_p),
+            nn.Linear(64, 256),
             nn.ReLU(),
             nn.Linear(256, 256),
-            nn.Dropout(p=final_dropout_p),
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.Dropout(p=final_dropout_p),
             nn.ReLU(),
-            nn.Linear(128, 1)
+            nn.Linear(128, 128),
+            nn.Dropout(p=final_dropout_p),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.Dropout(p=final_dropout_p),
+            nn.ReLU(),
+            nn.Linear(64, 1)
         )
 
         self.embedder = nn.Sequential(
             nn.Dropout(p=final_dropout_p),
-            nn.Linear(last_channel_width, 128)
+            nn.Linear(last_channel_width, 64)
         )
 
 
